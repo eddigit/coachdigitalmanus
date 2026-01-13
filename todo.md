@@ -183,3 +183,12 @@
 - [ ] Export PDF du cahier des charges
 - [ ] Liaison avec projets
 - [ ] Historique des modifications
+
+
+## Interface Client Partage Credentials (EN COURS)
+- [x] Créer composant ClientCredentialsManager dans l'espace client
+- [x] Formulaire ajout credentials avec catégories
+- [x] Liste des credentials partagés du client
+- [x] Modification/suppression credentials
+- [ ] Notification email au coach à chaque ajout
+- [x] Intégrer dans ClientDashboard

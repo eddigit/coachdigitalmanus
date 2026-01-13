@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import NewRequestForm from "@/components/NewRequestForm";
+import ClientCredentialsManager from "@/components/ClientCredentialsManager";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
@@ -25,6 +26,7 @@ export default function ClientDashboard() {
   const [, setLocation] = useLocation();
   const [clientUser, setClientUser] = useState<any>(null);
   const [showNewRequest, setShowNewRequest] = useState(false);
+  const [activeTab, setActiveTab] = useState<"overview" | "credentials">("overview");
 
   useEffect(() => {
     // Vérifier l'authentification
@@ -84,6 +86,33 @@ export default function ClientDashboard() {
           </p>
         </div>
 
+        {/* Tabs */}
+        <div className="flex gap-4 mb-6 border-b border-border">
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`px-4 py-2 font-medium transition-colors ${
+              activeTab === "overview"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Vue d'ensemble
+          </button>
+          <button
+            onClick={() => setActiveTab("credentials")}
+            className={`px-4 py-2 font-medium transition-colors ${
+              activeTab === "credentials"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Mes Identifiants
+          </button>
+        </div>
+
+        {/* Overview Tab */}
+        {activeTab === "overview" && (
+        <>
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card className="hover:border-primary/50 transition-colors cursor-pointer">
@@ -211,6 +240,13 @@ export default function ClientDashboard() {
             </div>
           </CardContent>
         </Card>
+        </>
+        )}
+
+        {/* Credentials Tab */}
+        {activeTab === "credentials" && (
+          <ClientCredentialsManager clientId={clientUser.id} />
+        )}
       </main>
 
       {/* Footer */}
