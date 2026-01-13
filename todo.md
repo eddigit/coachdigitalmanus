@@ -766,3 +766,29 @@
 - [x] Remplacer les URLs dans leadsRouter.ts (tracking emails)
 - [x] Remplacer les URLs dans stripeRouter.ts (redirections paiement)
 - [x] Toutes les URLs par défaut pointent maintenant vers https://coachdigital.biz
+
+## Transformation PWA Mobile-First avec Notifications Push (TERMINÉ)
+
+### Phase 1 : Design Responsive Mobile-First
+- [x] Audit du responsive actuel (sidebar déjà responsive avec SidebarTrigger)
+- [x] Sidebar déjà responsive avec menu hamburger mobile intégré
+- [x] Adapter les cards dashboard pour mobile (grid responsive)
+- [x] Améliorer le responsive du header (masquer search sur mobile)
+- [x] Optimiser les espacements pour mobile (padding réduit)
+
+### Phase 2 : Configuration PWA
+- [x] Créer manifest.json avec métadonnées app
+- [x] Générer icônes PWA (192x192, 512x512)
+- [x] Configurer service worker pour cache offline (sw.js)
+- [x] Ajouter meta tags PWA dans index.html
+- [x] Configurer thème color (#E67E50) et splash screen
+- [x] Créer page offline.html
+- [x] Créer hook usePWA pour enregistrement service worker
+- [x] Créer composant InstallPWABanner pour inviter à installer
+
+### Phase 3 : Système de Notifications Push
+- [x] Créer hook useNotifications pour gérer les permissions
+- [x] Créer composant NotificationPermissionPrompt
+- [x] Demander permission notifications après 5 secondes
+- [x] Support notifications via service worker
+- [x] Intégrer dans App.tsx

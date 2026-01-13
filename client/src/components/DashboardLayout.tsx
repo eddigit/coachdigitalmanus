@@ -237,7 +237,7 @@ function DashboardLayoutContent({
 
       <SidebarInset>
         {/* Header avec profil en haut à droite */}
-        <div className="flex border-b h-14 items-center justify-between bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
+        <div className="flex border-b h-14 items-center justify-between bg-background/95 px-3 sm:px-4 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
           <div className="flex items-center gap-4 flex-1">
             {isMobile && <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />}
             <div className="flex items-center gap-3">
@@ -247,7 +247,7 @@ function DashboardLayoutContent({
                 </span>
               </div>
             </div>
-            <div className="flex-1 max-w-md">
+            <div className="flex-1 max-w-md hidden sm:block">
               <GlobalSearch />
             </div>
           </div>
@@ -297,7 +297,7 @@ function DashboardLayoutContent({
           </DropdownMenu>
           </div>
         </div>
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-3 sm:p-4 md:p-6">{children}</main>
       </SidebarInset>
     </>
   );

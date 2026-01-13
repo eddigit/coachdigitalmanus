@@ -24,6 +24,9 @@ import EmailCampaigns from "./pages/EmailCampaigns";
 import ClientLogin from "./pages/client/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientInvitation from "./pages/client/Invitation";
+import { usePWA } from "./hooks/usePWA";
+import InstallPWABanner from "./components/InstallPWABanner";
+import NotificationPermissionPrompt from "./components/NotificationPermissionPrompt";
 
 function Router() {
   return (
@@ -59,12 +62,17 @@ function Router() {
 }
 
 function App() {
+  // Initialiser PWA
+  usePWA();
+  
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
           <Router />
+          <InstallPWABanner />
+          <NotificationPermissionPrompt />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
