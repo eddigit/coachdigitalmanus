@@ -24,6 +24,7 @@ import { notesRouter } from "./notesRouter";
 import { emailCampaignsRouter } from "./emailCampaignsRouter";
 import { emailTrackingRouter } from "./emailTrackingRouter";
 import { smtpRouter } from "./smtpRouter";
+import { reviewsRouter } from "./reviewsRouter";
 
 // ============================================================================
 // SCHEMAS
@@ -111,6 +112,7 @@ export const appRouter = router({
   emailCampaigns: emailCampaignsRouter,
   emailTracking: emailTrackingRouter,
   notes: notesRouter,
+  reviews: reviewsRouter,
   
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),

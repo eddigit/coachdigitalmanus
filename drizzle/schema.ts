@@ -723,3 +723,23 @@ export const documentTemplates = mysqlTable("documentTemplates", {
 
 export type DocumentTemplate = typeof documentTemplates.$inferSelect;
 export type InsertDocumentTemplate = typeof documentTemplates.$inferInsert;
+
+// ==========================================================================
+// REVIEWS (Avis et notations clients)
+// ==========================================================================
+
+export const reviews = mysqlTable("reviews", {
+  id: int("id").primaryKey().autoincrement(),
+  clientId: int("clientId").notNull(), // Client qui laisse l'avis
+  projectId: int("projectId"), // Projet concerné (optionnel)
+  rating: int("rating").notNull(), // Note de 1 à 5
+  comment: text("comment"), // Commentaire optionnel
+  isPublic: boolean("isPublic").default(true).notNull(), // Afficher publiquement
+  response: text("response"), // Réponse du coach
+  respondedAt: timestamp("respondedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = typeof reviews.$inferInsert;

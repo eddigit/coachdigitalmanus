@@ -20,6 +20,8 @@ import {
   projectCredentials,
   credentialAccessLogs,
   projectRequirements,
+  reviews,
+  InsertReview,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -852,4 +854,124 @@ export async function getUserById(userId: number) {
     .limit(1);
 
   return result[0] || null;
+}
+
+// ============================================================================
+// REVIEWS (Avis et notations)
+// ============================================================================
+
+export async function createReview(data: InsertReview) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(reviews).values(data);
+  return result[0].insertId;
+}
+
+export async function getReviews(filters?: {
+  clientId?: number;
+  projectId?: number;
+  isPublic?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let query = db.select().from(reviews);
+
+  if (filters?.clientId) {
+    query = query.where(eq(reviews.clientId, filters.clientId)) as any;
+  }
+  if (filters?.projectId) {
+    query = query.where(eq(reviews.projectId, filters.projectId)) as any;
+  }
+  if (filters?.isPublic !== undefined) {
+    query = query.where(eq(reviews.isPublic, filters.isPublic)) as any;
+  }
+
+  const result = await query.orderBy(desc(reviews.createdAt));
+  return result;
+}
+
+export async function getReviewById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.id, id))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+export async function updateReview(id: number, data: Partial<InsertReview>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(reviews)
+    .set(data)
+    .where(eq(reviews.id, id));
+}
+
+export async function deleteReview(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .delete(reviews)
+    .where(eq(reviews.id, id));
+}
+
+export async function respondToReview(id: number, response: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(reviews)
+    .set({
+      response,
+      respondedAt: new Date(),
+    })
+    .where(eq(reviews.id, id));
+}
+
+export async function getAverageRating() {
+  const db = await getDb();
+  if (!db) return { average: 0, count: 0 };
+
+  const result = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.isPublic, true));
+
+  if (result.length === 0) {
+    return { average: 0, count: 0 };
+  }
+
+  const sum = result.reduce((acc, review) => acc + review.rating, 0);
+  const average = sum / result.length;
+
+  return {
+    average: Math.round(average * 10) / 10, // Arrondir à 1 décimale
+    count: result.length,
+  };
+}
+
+export async function getClientReviewsWithProjects(clientId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select({
+      review: reviews,
+      project: projects,
+    })
+    .from(reviews)
+    .leftJoin(projects, eq(reviews.projectId, projects.id))
+    .where(eq(reviews.clientId, clientId))
+    .orderBy(desc(reviews.createdAt));
+
+  return result;
 }

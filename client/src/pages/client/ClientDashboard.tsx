@@ -5,6 +5,8 @@ import NewRequestForm from "@/components/NewRequestForm";
 import ClientCredentialsManager from "@/components/ClientCredentialsManager";
 import ClientDocuments from "@/components/ClientDocuments";
 import ClientPayments from "@/components/ClientPayments";
+import ReviewForm from "@/components/ReviewForm";
+import ReviewCard from "@/components/ReviewCard";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
@@ -16,6 +18,7 @@ import {
   Lock,
   Plus,
   LogOut,
+  Star,
   Download,
   Eye,
 } from "lucide-react";
@@ -212,6 +215,24 @@ export default function ClientDashboard() {
         {/* Paiements */}
         <div className="mt-6">
           <ClientPayments clientUserId={clientUser.id} />
+        </div>
+
+        {/* Avis et Évaluations */}
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                <CardTitle>Vos Avis</CardTitle>
+              </div>
+              <CardDescription>
+                Partagez votre expérience et évaluez nos services
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ReviewForm clientId={clientUser.id} />
+            </CardContent>
+          </Card>
         </div>
 
         {/* CTA Section */}

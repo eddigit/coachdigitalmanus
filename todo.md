@@ -803,3 +803,18 @@
 - [x] Configurer VITE_APP_URL avec https://coachdigital.biz
 - [x] Variable d'environnement mise à jour côté serveur
 - [x] Les emails d'invitation utilisent maintenant coachdigital.biz
+
+## Système de notation par étoiles (TERMINÉ)
+- [x] Créer table reviews dans schema.ts (rating, comment, clientId, projectId, createdAt)
+- [x] Créer table reviews via SQL directement
+- [x] Ajouter fonctions CRUD dans db.ts (createReview, getReviews, getAverageRating)
+- [x] Créer reviewsRouter avec mutations et queries
+- [x] Intégrer reviewsRouter dans routers.ts
+- [x] Créer composant StarRating pour afficher et sélectionner les étoiles
+- [x] Créer composant ReviewCard pour afficher un avis
+- [x] Créer composant ReviewForm pour soumettre un avis
+- [x] Ajouter section avis dans l'espace client (ClientDashboard)
+- [x] Créer page Reviews dans le dashboard coach
+- [x] Ajouter route /reviews dans App.tsx
+- [x] Ajouter lien "Avis Clients" dans le menu sidebar
+- [x] Afficher moyenne des notes et statistiques sur la page Reviews
