@@ -308,3 +308,91 @@ export const documentLines = mysqlTable("documentLines", {
 
 export type DocumentLine = typeof documentLines.$inferSelect;
 export type InsertDocumentLine = typeof documentLines.$inferInsert;
+
+// ============================================================================
+// PROJECT REQUIREMENTS (Cahier des charges)
+// ============================================================================
+
+export const projectRequirements = mysqlTable("projectRequirements", {
+  id: int("id").autoincrement().primaryKey(),
+  projectId: int("projectId").notNull(),
+  version: int("version").default(1).notNull(),
+  // Contenu
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  objectives: text("objectives"),
+  scope: text("scope"),
+  constraints: text("constraints"),
+  deliverables: text("deliverables"),
+  timeline: text("timeline"),
+  budget: decimal("budget", { precision: 10, scale: 2 }),
+  // Statut
+  status: mysqlEnum("status", ["draft", "review", "approved", "archived"]).default("draft").notNull(),
+  approvedAt: timestamp("approvedAt"),
+  approvedBy: int("approvedBy"),
+  // Métadonnées
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ProjectRequirement = typeof projectRequirements.$inferSelect;
+export type InsertProjectRequirement = typeof projectRequirements.$inferInsert;
+
+// ============================================================================
+// PROJECT CREDENTIALS (Coffre-fort RGPD par projet)
+// ============================================================================
+
+export const projectCredentials = mysqlTable("projectCredentials", {
+  id: int("id").autoincrement().primaryKey(),
+  projectId: int("projectId").notNull(),
+  // Catégorie
+  category: mysqlEnum("category", [
+    "hosting", // Hébergement (FTP, SSH, cPanel)
+    "api", // API keys et tokens
+    "smtp", // Configuration email
+    "domain", // Accès domaine et DNS
+    "cms", // Logins admin CMS
+    "database", // Accès base de données
+    "other" // Autre
+  ]).notNull(),
+  // Informations
+  label: varchar("label", { length: 255 }).notNull(),
+  description: text("description"),
+  // Credentials chiffrés
+  encryptedData: text("encryptedData").notNull(), // JSON chiffré AES-256
+  // Métadonnées
+  url: text("url"),
+  expiresAt: timestamp("expiresAt"),
+  notes: text("notes"),
+  // Traçabilité RGPD
+  sharedBy: int("sharedBy"), // ID du client qui a partagé
+  sharedAt: timestamp("sharedAt"),
+  lastAccessedBy: int("lastAccessedBy"),
+  lastAccessedAt: timestamp("lastAccessedAt"),
+  accessCount: int("accessCount").default(0),
+  // Statut
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ProjectCredential = typeof projectCredentials.$inferSelect;
+export type InsertProjectCredential = typeof projectCredentials.$inferInsert;
+
+// ============================================================================
+// CREDENTIAL ACCESS LOGS (Logs d'accès pour conformité CNIL/ANSSI)
+// ============================================================================
+
+export const credentialAccessLogs = mysqlTable("credentialAccessLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  credentialId: int("credentialId").notNull(),
+  accessedBy: int("accessedBy").notNull(),
+  accessType: mysqlEnum("accessType", ["view", "edit", "delete"]).notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  accessedAt: timestamp("accessedAt").defaultNow().notNull(),
+});
+
+export type CredentialAccessLog = typeof credentialAccessLogs.$inferSelect;
+export type InsertCredentialAccessLog = typeof credentialAccessLogs.$inferInsert;

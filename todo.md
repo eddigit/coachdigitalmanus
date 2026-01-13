@@ -132,3 +132,23 @@
 - [x] Notification email à coachdigitalparis@gmail.com
 - [ ] Afficher historique demandes dans dashboard client
 - [ ] Statuts demandes (brouillon, envoyée, en cours, terminée)
+
+
+## Système de Gestion de Projet avec Coffre-fort RGPD
+- [x] Créer table projectRequirements (cahier des charges)
+- [x] Créer table projectCredentials (coffre-fort par projet)
+- [x] Catégories credentials (hébergement, API, SMTP, domaine, CMS, autre)
+- [x] Chiffrement AES-256 des credentials côté serveur
+- [x] Logs d'accès pour traçabilité CNIL/ANSSI
+- [ ] Interface admin : vue coffre-fort par projet
+- [ ] Interface admin : ajout/modification/suppression credentials
+- [ ] Interface admin : déchiffrement à la demande
+- [ ] Interface client : formulaire partage credentials sécurisé
+- [ ] Interface client : catégorisation des credentials
+- [ ] Interface client : historique des credentials partagés
+- [ ] Template cahier des charges par type de projet
+- [ ] Formulaire structuré cahier des charges
+- [ ] Versioning et historique modifications cahier des charges
+- [ ] Export PDF cahier des charges validé
+- [ ] Aucun transit credentials par email (100% interface)
+- [ ] Conformité RGPD/CNIL/ANSSI complète
