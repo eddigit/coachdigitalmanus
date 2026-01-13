@@ -44,3 +44,17 @@
 - [ ] Tests de génération PDF
 - [ ] Vérification authentification
 - [ ] Checkpoint final
+
+
+## Tâches urgentes à compléter
+- [x] Formulaires complets Clients (création + édition)
+- [x] Formulaires complets Projets (création + édition)
+- [ ] Formulaires complets Tâches (création + édition)
+- [ ] Formulaires complets Documents (création devis/factures)
+- [ ] Page Paramètres avec infos entreprise
+- [ ] Génération PDF devis
+- [ ] Génération PDF factures
+- [ ] Numérotation automatique documents
+- [ ] Calculs automatiques (HT, TVA, TTC)
+- [ ] Espace client (portail séparé)
+- [ ] Navigation sidebar complète

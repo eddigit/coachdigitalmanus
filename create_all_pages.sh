@@ -1,3 +1,7 @@
+#!/bin/bash
+
+# Projects.tsx
+cat > client/src/pages/Projects.tsx << 'EOF'
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -186,3 +190,57 @@ export default function Projects() {
     </DashboardLayout>
   );
 }
+EOF
+
+# Tasks.tsx
+cat > client/src/pages/Tasks.tsx << 'EOF'
+import DashboardLayout from "@/components/DashboardLayout";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function Tasks() {
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Tâches</h1>
+        <Card><CardContent className="py-12 text-center">Page en cours de développement</CardContent></Card>
+      </div>
+    </DashboardLayout>
+  );
+}
+EOF
+
+# Documents.tsx
+cat > client/src/pages/Documents.tsx << 'EOF'
+import DashboardLayout from "@/components/DashboardLayout";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function Documents() {
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Documents</h1>
+        <Card><CardContent className="py-12 text-center">Page en cours de développement</CardContent></Card>
+      </div>
+    </DashboardLayout>
+  );
+}
+EOF
+
+# Settings.tsx
+cat > client/src/pages/Settings.tsx << 'EOF'
+import DashboardLayout from "@/components/DashboardLayout";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function Settings() {
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Paramètres</h1>
+        <Card><CardContent className="py-12 text-center">Page en cours de développement</CardContent></Card>
+      </div>
+    </DashboardLayout>
+  );
+}
+EOF
+
+echo "Toutes les pages créées"
