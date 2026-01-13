@@ -17,6 +17,9 @@ import {
   InsertDocument,
   documentLines,
   InsertDocumentLine,
+  projectCredentials,
+  credentialAccessLogs,
+  projectRequirements,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -525,4 +528,210 @@ export async function getClientRequestById(id: number) {
 
   // TODO: Implémenter quand la table sera créée
   return null;
+}
+
+// ============================================================================
+// PROJECT CREDENTIALS (Coffre-fort RGPD)
+// ============================================================================
+
+export async function createProjectCredential(data: {
+  projectId: number;
+  category: "hosting" | "api" | "smtp" | "domain" | "cms" | "database" | "other";
+  label: string;
+  description?: string | null;
+  encryptedData: string;
+  url?: string | null;
+  expiresAt?: Date | null;
+  notes?: string | null;
+  sharedBy?: number | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(projectCredentials).values({
+    projectId: data.projectId,
+    category: data.category,
+    label: data.label,
+    description: data.description,
+    encryptedData: data.encryptedData,
+    url: data.url,
+    expiresAt: data.expiresAt,
+    notes: data.notes,
+    sharedBy: data.sharedBy,
+    sharedAt: data.sharedBy ? new Date() : undefined,
+    isActive: true,
+  });
+
+  return Number(result[0].insertId);
+}
+
+export async function getProjectCredentials(projectId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(projectCredentials)
+    .where(eq(projectCredentials.projectId, projectId))
+    .orderBy(projectCredentials.createdAt);
+}
+
+export async function getProjectCredentialById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(projectCredentials)
+    .where(eq(projectCredentials.id, id))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+export async function updateProjectCredential(id: number, data: {
+  label?: string;
+  description?: string | null;
+  encryptedData?: string;
+  url?: string | null;
+  expiresAt?: Date | null;
+  notes?: string | null;
+  isActive?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(projectCredentials)
+    .set(data)
+    .where(eq(projectCredentials.id, id));
+}
+
+export async function deleteProjectCredential(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .delete(projectCredentials)
+    .where(eq(projectCredentials.id, id));
+}
+
+export async function logCredentialAccess(data: {
+  credentialId: number;
+  accessedBy: number;
+  accessType: "view" | "edit" | "delete";
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(credentialAccessLogs).values(data);
+
+  // Mettre à jour les stats d'accès du credential
+  await db
+    .update(projectCredentials)
+    .set({
+      lastAccessedBy: data.accessedBy,
+      lastAccessedAt: new Date(),
+      accessCount: sql`${projectCredentials.accessCount} + 1`,
+    })
+    .where(eq(projectCredentials.id, data.credentialId));
+}
+
+export async function getCredentialAccessLogs(credentialId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(credentialAccessLogs)
+    .where(eq(credentialAccessLogs.credentialId, credentialId))
+    .orderBy(credentialAccessLogs.accessedAt);
+}
+
+// ============================================================================
+// PROJECT REQUIREMENTS (Cahier des charges)
+// ============================================================================
+
+export async function createProjectRequirement(data: {
+  projectId: number;
+  title: string;
+  description?: string | null;
+  objectives?: string | null;
+  scope?: string | null;
+  constraints?: string | null;
+  deliverables?: string | null;
+  timeline?: string | null;
+  budget?: string | null;
+  createdBy: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(projectRequirements).values({
+    ...data,
+    version: 1,
+    status: "draft",
+  });
+
+  return Number(result[0].insertId);
+}
+
+export async function getProjectRequirements(projectId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(projectRequirements)
+    .where(eq(projectRequirements.projectId, projectId))
+    .orderBy(projectRequirements.version);
+}
+
+export async function getProjectRequirementById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(projectRequirements)
+    .where(eq(projectRequirements.id, id))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+export async function updateProjectRequirement(id: number, data: {
+  title?: string;
+  description?: string | null;
+  objectives?: string | null;
+  scope?: string | null;
+  constraints?: string | null;
+  deliverables?: string | null;
+  timeline?: string | null;
+  budget?: string | null;
+  status?: "draft" | "review" | "approved" | "archived";
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(projectRequirements)
+    .set(data)
+    .where(eq(projectRequirements.id, id));
+}
+
+export async function approveProjectRequirement(id: number, approvedBy: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(projectRequirements)
+    .set({
+      status: "approved",
+      approvedAt: new Date(),
+      approvedBy,
+    })
+    .where(eq(projectRequirements.id, id));
 }

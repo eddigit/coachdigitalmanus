@@ -140,15 +140,46 @@
 - [x] Catégories credentials (hébergement, API, SMTP, domaine, CMS, autre)
 - [x] Chiffrement AES-256 des credentials côté serveur
 - [x] Logs d'accès pour traçabilité CNIL/ANSSI
-- [ ] Interface admin : vue coffre-fort par projet
-- [ ] Interface admin : ajout/modification/suppression credentials
-- [ ] Interface admin : déchiffrement à la demande
+- [x] Interface admin : vue coffre-fort par projet (backend)
+- [x] Interface admin : ajout/modification/suppression credentials (backend)
+- [x] Interface admin : déchiffrement à la demande (backend)
 - [ ] Interface client : formulaire partage credentials sécurisé
-- [ ] Interface client : catégorisation des credentials
-- [ ] Interface client : historique des credentials partagés
+- [ ] Interface client : catégorisation des credential- [x] Interface admin : historique des accèsedentials partagés
 - [ ] Template cahier des charges par type de projet
 - [ ] Formulaire structuré cahier des charges
 - [ ] Versioning et historique modifications cahier des charges
 - [ ] Export PDF cahier des charges validé
 - [ ] Aucun transit credentials par email (100% interface)
 - [ ] Conformité RGPD/CNIL/ANSSI complète
+
+
+## Implémentation des 3 Fonctionnalités Recommandées
+
+### 1. Interface Admin Coffre-fort
+- [ ] Créer page admin Coffre-fort (/vault ou intégré dans projet)
+- [ ] Liste des credentials par projet avec catégories
+- [ ] Bouton "Voir" avec déchiffrement à la demande
+- [ ] Formulaire ajout/modification credential
+- [ ] Suppression avec confirmation
+- [ ] Historique des accès (logs)
+- [ ] Filtres par catégorie et projet
+- [ ] Indicateur d'expiration des credentials
+
+### 2. Interface Client Partage Credentials
+- [ ] Section "Coffre-fort" dans dashboard client
+- [ ] Formulaire partage credentials par catégorie
+- [ ] Champs dynamiques selon catégorie sélectionnée
+- [ ] Validation et chiffrement côté serveur
+- [ ] Liste des credentials partagés (masqués)
+- [ ] Possibilité de modifier/supprimer
+- [ ] Notification au coach lors du partage
+
+### 3. Système Cahier des Charges
+- [ ] Créer page admin Cahier des Charges
+- [ ] Templates par type de projet (site web, app, coaching IA, optimisation)
+- [ ] Formulaire structuré avec sections
+- [ ] Versioning automatique
+- [ ] Statuts (brouillon, en revue, approuvé, archivé)
+- [ ] Export PDF du cahier des charges
+- [ ] Liaison avec projets
+- [ ] Historique des modifications

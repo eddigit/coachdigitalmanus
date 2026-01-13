@@ -380,6 +380,201 @@ export const appRouter = router({
         return await clientAuth.acceptInvitation(input.token, input.password);
       }),
   }),
+
+  // ==========================================================================
+  // PROJECT CREDENTIALS (Coffre-fort RGPD)
+  // ==========================================================================
+  
+  vault: router({
+    list: protectedProcedure
+      .input(z.object({ projectId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getProjectCredentials(input.projectId);
+      }),
+    
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const credential = await db.getProjectCredentialById(input.id);
+        if (!credential) throw new Error("Credential not found");
+        
+        // Logger l'accès
+        await db.logCredentialAccess({
+          credentialId: input.id,
+          accessedBy: ctx.user!.id,
+          accessType: "view",
+        });
+        
+        return credential;
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        projectId: z.number(),
+        category: z.enum(["hosting", "api", "smtp", "domain", "cms", "database", "other"]),
+        label: z.string().min(1),
+        description: z.string().optional().nullable(),
+        credentialData: z.record(z.string(), z.any()), // Données à chiffrer
+        url: z.string().optional().nullable(),
+        expiresAt: z.date().optional().nullable(),
+        notes: z.string().optional().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        const { encryptCredentials } = await import("./encryption");
+        const encryptedData = encryptCredentials(input.credentialData);
+        
+        const id = await db.createProjectCredential({
+          projectId: input.projectId,
+          category: input.category,
+          label: input.label,
+          description: input.description,
+          encryptedData,
+          url: input.url,
+          expiresAt: input.expiresAt,
+          notes: input.notes,
+        });
+        
+        return { success: true, id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        label: z.string().min(1).optional(),
+        description: z.string().optional().nullable(),
+        credentialData: z.record(z.string(), z.any()).optional(),
+        url: z.string().optional().nullable(),
+        expiresAt: z.date().optional().nullable(),
+        notes: z.string().optional().nullable(),
+        isActive: z.boolean().optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const { id, credentialData, ...rest } = input;
+        
+        let encryptedData: string | undefined;
+        if (credentialData) {
+          const { encryptCredentials } = await import("./encryption");
+          encryptedData = encryptCredentials(credentialData);
+        }
+        
+        await db.updateProjectCredential(id, {
+          ...rest,
+          encryptedData,
+        });
+        
+        // Logger l'accès
+        await db.logCredentialAccess({
+          credentialId: id,
+          accessedBy: ctx.user!.id,
+          accessType: "edit",
+        });
+        
+        return { success: true };
+      }),
+    
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        // Logger l'accès avant suppression
+        await db.logCredentialAccess({
+          credentialId: input.id,
+          accessedBy: ctx.user!.id,
+          accessType: "delete",
+        });
+        
+        await db.deleteProjectCredential(input.id);
+        return { success: true };
+      }),
+    
+    decrypt: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const credential = await db.getProjectCredentialById(input.id);
+        if (!credential) throw new Error("Credential not found");
+        
+        const { decryptCredentials } = await import("./encryption");
+        const decryptedData = decryptCredentials(credential.encryptedData);
+        
+        // Logger l'accès
+        await db.logCredentialAccess({
+          credentialId: input.id,
+          accessedBy: ctx.user!.id,
+          accessType: "view",
+        });
+        
+        return { ...credential, decryptedData };
+      }),
+    
+    logs: protectedProcedure
+      .input(z.object({ credentialId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getCredentialAccessLogs(input.credentialId);
+      }),
+  }),
+
+  // ==========================================================================
+  // PROJECT REQUIREMENTS (Cahier des charges)
+  // ==========================================================================
+  
+  requirements: router({
+    list: protectedProcedure
+      .input(z.object({ projectId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getProjectRequirements(input.projectId);
+      }),
+    
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getProjectRequirementById(input.id);
+      }),
+    
+    create: protectedProcedure
+      .input(z.object({
+        projectId: z.number(),
+        title: z.string().min(1),
+        description: z.string().optional().nullable(),
+        objectives: z.string().optional().nullable(),
+        scope: z.string().optional().nullable(),
+        constraints: z.string().optional().nullable(),
+        deliverables: z.string().optional().nullable(),
+        timeline: z.string().optional().nullable(),
+        budget: z.string().optional().nullable(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        const id = await db.createProjectRequirement({
+          ...input,
+          createdBy: ctx.user!.id,
+        });
+        return { success: true, id };
+      }),
+    
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().min(1).optional(),
+        description: z.string().optional().nullable(),
+        objectives: z.string().optional().nullable(),
+        scope: z.string().optional().nullable(),
+        constraints: z.string().optional().nullable(),
+        deliverables: z.string().optional().nullable(),
+        timeline: z.string().optional().nullable(),
+        budget: z.string().optional().nullable(),
+        status: z.enum(["draft", "review", "approved", "archived"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateProjectRequirement(id, data);
+        return { success: true };
+      }),
+    
+    approve: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await db.approveProjectRequirement(input.id, ctx.user!.id);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

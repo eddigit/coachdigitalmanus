@@ -55,8 +55,8 @@ export default function Tasks() {
     const clientId = formData.get("clientId") as string;
     
     const data = {
-      projectId: projectId ? parseInt(projectId) : null,
-      clientId: clientId ? parseInt(clientId) : null,
+      projectId: projectId && projectId !== "none" ? parseInt(projectId) : null,
+      clientId: clientId && clientId !== "none" ? parseInt(clientId) : null,
       title: formData.get("title") as string,
       description: (formData.get("description") as string) || null,
       status: (formData.get("status") as any) || "todo",
@@ -120,7 +120,7 @@ export default function Tasks() {
                     <Select name="projectId" defaultValue={editingTask?.projectId?.toString()}>
                       <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Aucun projet</SelectItem>
+                        <SelectItem value="none">Aucun projet</SelectItem>
                         {projects?.map((p) => (
                           <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>
                         ))}
@@ -132,7 +132,7 @@ export default function Tasks() {
                     <Select name="clientId" defaultValue={editingTask?.clientId?.toString()}>
                       <SelectTrigger><SelectValue placeholder="Aucun" /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Aucun client</SelectItem>
+                        <SelectItem value="none">Aucun client</SelectItem>
                         {clients?.map((c) => (
                           <SelectItem key={c.id} value={c.id.toString()}>
                             {c.firstName} {c.lastName}
