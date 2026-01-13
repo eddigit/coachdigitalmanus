@@ -10,6 +10,7 @@ import { clientUsers, projectRequirements } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notifyDocumentCreated, notifyQuoteConverted, getClientLoginUrl } from "./emailNotifications";
 import { stripeRouter } from "./stripeRouter";
+import { uploadRouter } from "./uploadRouter";
 import { messagesRouter } from "./messagesRouter";
 import { calendarRouter } from "./calendarRouter";
 
@@ -89,6 +90,7 @@ const companySchema = z.object({
 export const appRouter = router({
   system: systemRouter,
   stripe: stripeRouter,
+  upload: uploadRouter,
   messages: messagesRouter,
   calendar: calendarRouter,
   
@@ -169,67 +171,14 @@ export const appRouter = router({
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
-        await db.deleteDocument(input.id);
+        await db.deleteClient(input.id);
         return { success: true };
       }),
-    
-    convertToInvoice: protectedProcedure
-      .input(z.object({ quoteId: z.number() }))
-      .mutation(async ({ input }) => {
-        // Récupérer le devis avec ses lignes
-        const quote = await db.getDocumentById(input.quoteId);
-        if (!quote) {
-          throw new Error("Devis introuvable");
-        }
-        
-        if (quote.type !== "quote") {
-          throw new Error("Ce document n'est pas un devis");
-        }
-        
-        const lines = await db.getDocumentLinesByDocumentId(input.quoteId);
-        
-        // Créer la facture avec les mêmes données
-        const invoiceId = await db.createDocument({
-          clientId: quote.clientId,
-          projectId: quote.projectId,
-          type: "invoice",
-          date: new Date(),
-          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 jours
-          validityDate: null,
-          subject: quote.subject,
-          introduction: quote.introduction,
-          conclusion: quote.conclusion,
-          notes: `Facture générée depuis le devis ${quote.number}`,
-          paymentTerms: quote.paymentTerms,
-          paymentMethod: quote.paymentMethod,
-          isAcompteRequired: quote.isAcompteRequired,
-          acomptePercentage: quote.acomptePercentage,
-          lines: lines.map((line) => ({
-            description: line.description,
-            quantity: line.quantity || "1",
-            unit: line.unit || "unité",
-            unitPriceHt: line.unitPriceHt,
-            tvaRate: line.tvaRate,
-          })),
-        });
-        
-        // Récupérer la facture créée pour la notification
-        const invoice = await db.getDocumentById(invoiceId);
-        if (invoice) {
-          const client = await db.getClientById(quote.clientId);
-          if (client) {
-            await notifyQuoteConverted({
-              clientName: `${client.firstName} ${client.lastName}`,
-              quoteNumber: quote.number,
-              invoiceNumber: invoice.number,
-              totalTtc: invoice.totalTtc,
-            });
-          }
-        }
-        
-        return { success: true, invoiceId };
-      }),
   }),
+  
+  // ==========================================================================
+  // DOCUMENTS
+  // ==========================================================================
 
   // ==========================================================================
   // PROJECTS
@@ -440,6 +389,63 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         return await db.deleteDocument(input.id);
+      }),
+    
+    convertToInvoice: protectedProcedure
+      .input(z.object({ quoteId: z.number() }))
+      .mutation(async ({ input }) => {
+        // Récupérer le devis avec ses lignes
+        const quote = await db.getDocumentById(input.quoteId);
+        if (!quote) {
+          throw new Error("Devis introuvable");
+        }
+        
+        if (quote.type !== "quote") {
+          throw new Error("Ce document n'est pas un devis");
+        }
+        
+        const lines = await db.getDocumentLinesByDocumentId(input.quoteId);
+        
+        // Créer la facture avec les mêmes données
+        const invoiceId = await db.createDocument({
+          clientId: quote.clientId,
+          projectId: quote.projectId,
+          type: "invoice",
+          date: new Date(),
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 jours
+          validityDate: null,
+          subject: quote.subject,
+          introduction: quote.introduction,
+          conclusion: quote.conclusion,
+          notes: `Facture générée depuis le devis ${quote.number}`,
+          paymentTerms: quote.paymentTerms,
+          paymentMethod: quote.paymentMethod,
+          isAcompteRequired: quote.isAcompteRequired,
+          acomptePercentage: quote.acomptePercentage,
+          lines: lines.map((line) => ({
+            description: line.description,
+            quantity: line.quantity || "1",
+            unit: line.unit || "unité",
+            unitPriceHt: line.unitPriceHt,
+            tvaRate: line.tvaRate,
+          })),
+        });
+        
+        // Récupérer la facture créée pour la notification
+        const invoice = await db.getDocumentById(invoiceId);
+        if (invoice) {
+          const client = await db.getClientById(quote.clientId);
+          if (client) {
+            await notifyQuoteConverted({
+              clientName: `${client.firstName} ${client.lastName}`,
+              quoteNumber: quote.number,
+              invoiceNumber: invoice.number,
+              totalTtc: invoice.totalTtc,
+            });
+          }
+        }
+        
+        return { success: true, invoiceId };
       }),
     
     getNextNumber: protectedProcedure

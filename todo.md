@@ -266,3 +266,29 @@
 
 ## Corrections Bugs
 - [x] Corriger l'erreur React Hooks dans Requirements (utilisation conditionnelle de hooks dans map)
+
+## CRUD Complet - Gestion Clients et Projets
+- [x] CRUD clients : édition fiche client (existe déjà)
+- [x] CRUD clients : suppression client (existe déjà)
+- [x] Upload avatar photo clients avec S3 (backend prêt)
+- [ ] Affichage avatar dans fiches clients (frontend à intégrer)
+- [x] Upload logo projets avec S3 (backend prêt)
+- [ ] Affichage logo dans fiches projets (frontend à intégrer)
+- [ ] Page détail projet : vue complète avec onglets
+- [ ] Onglet cahier des charges : affichage et édition
+- [ ] Onglet variables d'environnement : CRUD complet (ajout/édition/suppression)
+- [ ] Onglet notes projet : CRUD notes avec éditeur riche
+- [ ] Onglet tâches projet : liste et gestion des tâches liées
+- [ ] Onglet productions : liste documents/livrables du projet
+
+## Gestion Profil Admin
+- [x] Page profil admin avec photo et informations
+- [x] Upload photo profil admin avec S3
+- [ ] Édition informations profil (nom, email, téléphone) - TODO mutation backend
+- [x] Lien "Mon Profil" dans dropdown menu sidebar
+
+## Backend Admin
+- [ ] Page backend admin pour gestion plateforme
+- [ ] Statistiques globales (utilisateurs, projets, CA)
+- [ ] Logs d'activité et audit trail
+- [ ] Gestion paramètres système

@@ -821,3 +821,35 @@ export async function approveProjectRequirement(id: number, approvedBy: number) 
     })
     .where(eq(projectRequirements.id, id));
 }
+
+// ============================================================================
+// USER MANAGEMENT
+// ============================================================================
+
+export async function updateUser(userId: number, data: {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  avatarUrl?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(users)
+    .set(data)
+    .where(eq(users.id, userId));
+}
+
+export async function getUserById(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  return result[0] || null;
+}

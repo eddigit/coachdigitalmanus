@@ -14,6 +14,8 @@ export const users = mysqlTable("users", {
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
+  phone: varchar("phone", { length: 20 }),
+  avatarUrl: varchar("avatarUrl", { length: 500 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -165,6 +167,8 @@ export const clients = mysqlTable("clients", {
   status: mysqlEnum("status", ["active", "inactive"]).default("active").notNull(),
   // Notes
   notes: text("notes"),
+  // Avatar
+  avatarUrl: varchar("avatarUrl", { length: 500 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -191,6 +195,8 @@ export const projects = mysqlTable("projects", {
   // Budget
   budgetEstimate: decimal("budgetEstimate", { precision: 10, scale: 2 }),
   notes: text("notes"),
+  // Logo
+  logoUrl: varchar("logoUrl", { length: 500 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
