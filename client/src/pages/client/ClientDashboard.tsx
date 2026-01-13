@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import NewRequestForm from "@/components/NewRequestForm";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
@@ -22,6 +24,7 @@ import {
 export default function ClientDashboard() {
   const [, setLocation] = useLocation();
   const [clientUser, setClientUser] = useState<any>(null);
+  const [showNewRequest, setShowNewRequest] = useState(false);
 
   useEffect(() => {
     // Vérifier l'authentification
@@ -154,7 +157,7 @@ export default function ClientDashboard() {
                   <CardTitle>Projets en cours</CardTitle>
                   <CardDescription>Suivez l'avancement de vos projets</CardDescription>
                 </div>
-                <Button size="sm" className="gap-2">
+                <Button size="sm" className="gap-2" onClick={() => setShowNewRequest(true)}>
                   <Plus className="h-4 w-4" />
                   Nouvelle demande
                 </Button>
@@ -201,7 +204,7 @@ export default function ClientDashboard() {
                   Notre équipe est à votre disposition pour répondre à vos questions
                 </p>
               </div>
-              <Button className="gap-2">
+              <Button className="gap-2" onClick={() => setShowNewRequest(true)}>
                 <MessageSquare className="h-4 w-4" />
                 Contacter le coach
               </Button>
@@ -226,6 +229,19 @@ export default function ClientDashboard() {
           </div>
         </div>
       </footer>
+
+      {/* Dialogue formulaire nouvelle demande */}
+      <Dialog open={showNewRequest} onOpenChange={setShowNewRequest}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nouvelle Demande</DialogTitle>
+          </DialogHeader>
+          <NewRequestForm
+            onClose={() => setShowNewRequest(false)}
+            onSuccess={() => setShowNewRequest(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

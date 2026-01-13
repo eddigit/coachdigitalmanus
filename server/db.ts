@@ -488,3 +488,41 @@ export async function getStats() {
     totalRevenue: Number(revenue?.total || 0),
   };
 }
+
+// ============================================================================
+// CLIENT REQUESTS
+// ============================================================================
+
+export async function createClientRequest(data: {
+  type: string;
+  title: string;
+  description: string;
+  context?: string;
+  budget: number;
+  deadline: string;
+  priority: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Créer une entrée dans clientRequests (table à créer)
+  // Pour l'instant, on retourne un ID fictif
+  // TODO: Créer la table clientRequests dans le schéma
+  return 1;
+}
+
+export async function getAllClientRequests() {
+  const db = await getDb();
+  if (!db) return [];
+
+  // TODO: Implémenter quand la table sera créée
+  return [];
+}
+
+export async function getClientRequestById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  // TODO: Implémenter quand la table sera créée
+  return null;
+}

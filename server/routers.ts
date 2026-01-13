@@ -289,6 +289,49 @@ export const appRouter = router({
   }),
 
   // ==========================================================================
+  // CLIENT REQUESTS (Demandes clients)
+  // ==========================================================================
+  
+  clientRequests: router({
+    create: publicProcedure
+      .input(z.object({
+        type: z.enum(["coaching_ia", "site_web", "application", "optimisation", "autre"]),
+        title: z.string().min(1),
+        description: z.string().min(1),
+        context: z.string().optional(),
+        budget: z.number(),
+        deadline: z.string(),
+        priority: z.enum(["basse", "moyenne", "haute", "urgente"]),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createClientRequest(input);
+        
+        // Envoyer notification email au coach
+        try {
+          const { notifyOwner } = await import("./_core/notification");
+          await notifyOwner({
+            title: `Nouvelle demande client : ${input.title}`,
+            content: `Type: ${input.type}\nBudget: ${input.budget}€\nDélai: ${input.deadline}\nPriorité: ${input.priority}\n\nDescription:\n${input.description}${input.context ? `\n\nContexte:\n${input.context}` : ""}`,
+          });
+        } catch (error) {
+          console.error("Erreur notification email:", error);
+        }
+        
+        return { success: true, id };
+      }),
+    
+    list: protectedProcedure.query(async () => {
+      return await db.getAllClientRequests();
+    }),
+    
+    get: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getClientRequestById(input.id);
+      }),
+  }),
+
+  // ==========================================================================
   // CLIENT AUTH (Authentification espace client séparé)
   // ==========================================================================
   

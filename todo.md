@@ -118,3 +118,17 @@
 - [x] Adapter tous les boutons CTA en orange
 - [x] Mettre à jour les hover states
 - [x] Vérifier cohérence sur toutes les pages
+
+
+## Formulaire de Demande Client Multi-Étapes
+- [x] Créer composant formulaire multi-étapes avec indicateur progression
+- [x] Étape 1 : Sélection type de besoin (Coaching IA, Site web, App, Optimisation)
+- [x] Étape 2 : Description détaillée (contexte, objectifs, besoins)
+- [x] Étape 3 : Budget et délai (montant, échéance, priorité)
+- [x] Étape 4 : Récapitulatif et validation
+- [x] Validation Zod à chaque étape
+- [ ] Sauvegarde automatique en brouillon
+- [x] Router tRPC pour créer/modifier demandes
+- [x] Notification email à coachdigitalparis@gmail.com
+- [ ] Afficher historique demandes dans dashboard client
+- [ ] Statuts demandes (brouillon, envoyée, en cours, terminée)
