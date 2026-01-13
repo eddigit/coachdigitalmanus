@@ -21,6 +21,8 @@ import { timeEntriesRouter } from "./timeEntriesRouter";
 import { timeInvoiceRouter } from "./timeInvoiceRouter";
 import { leadsRouter, emailTemplatesRouter } from "./leadsRouter";
 import { notesRouter } from "./notesRouter";
+import { emailCampaignsRouter } from "./emailCampaignsRouter";
+import { emailTrackingRouter } from "./emailTrackingRouter";
 
 // ============================================================================
 // SCHEMAS
@@ -105,6 +107,8 @@ export const appRouter = router({
   timeInvoice: timeInvoiceRouter,
   leads: leadsRouter,
   emailTemplates: emailTemplatesRouter,
+  emailCampaigns: emailCampaignsRouter,
+  emailTracking: emailTrackingRouter,
   notes: notesRouter,
   
   auth: router({

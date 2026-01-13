@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { leads, leadEmails, emailTemplates, clients, emailCampaigns, emailQueue } from "../drizzle/schema";
+import { leads, leadEmails, emailTemplates, clients, emailCampaigns, emailQueue, emailTracking, emailBlacklist } from "../drizzle/schema";
 import { eq, and, desc, sql, gte } from "drizzle-orm";
 import { sendEmail } from "./emailService";
 
@@ -9,6 +9,22 @@ import { sendEmail } from "./emailService";
  * Router pour la gestion des leads et de la prospection
  */
 export const leadsRouter = router({
+  // Récupérer les leads en retard de relance
+  getOverdueFollowUps: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new Error("Database not available");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const overdueLeads = await db
+      .select()
+      .from(leads)
+      .where(sql`${leads.nextFollowUpDate} IS NOT NULL AND ${leads.nextFollowUpDate} < ${today}`);
+
+    return overdueLeads;
+  }),
+
   // Lister tous les leads
   list: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
@@ -271,15 +287,42 @@ export const leadsRouter = router({
         throw new Error("Lead has no email address");
       }
 
+      // Vérifier la blacklist
+      const blacklistResult = await db
+        .select()
+        .from(emailBlacklist)
+        .where(eq(emailBlacklist.email, lead.email))
+        .limit(1);
+
+      if (blacklistResult.length > 0) {
+        throw new Error("Email is blacklisted");
+      }
+
       // Remplacer les variables dans le sujet et le corps
       const subject = input.subject.replace(/\{\{firstName\}\}/g, lead.firstName);
-      const body = input.body.replace(/\{\{firstName\}\}/g, lead.firstName);
+      let body = input.body.replace(/\{\{firstName\}\}/g, lead.firstName);
+
+      // Créer un tracking ID
+      const trackingId = require('crypto').randomBytes(32).toString('hex');
+      const unsubscribeToken = Buffer.from(lead.email).toString('base64');
+      const baseUrl = process.env.VITE_FRONTEND_FORGE_API_URL || 'http://localhost:3000';
+
+      // Ajouter le pixel de tracking et le lien de désabonnement
+      const trackingPixel = `<img src="${baseUrl}/api/track/open/${trackingId}" width="1" height="1" style="display:none;" />`;
+      const unsubscribeLink = `<p style="font-size: 11px; color: #999; margin-top: 40px; text-align: center;"><a href="${baseUrl}/unsubscribe/${encodeURIComponent(lead.email)}/${unsubscribeToken}" style="color: #999;">Se désabonner</a></p>`;
+
+      // Wrapper les URLs avec le tracking de clics
+      body = body.replace(/href="([^"]+)"/g, (match, url) => {
+        return `href="${baseUrl}/api/track/click/${trackingId}?url=${encodeURIComponent(url)}"`;
+      });
+
+      const htmlBody = `<div style="font-family: Arial, sans-serif; white-space: pre-wrap;">${body}</div>${trackingPixel}${unsubscribeLink}`;
 
       // Envoyer l'email
       const sent = await sendEmail({
         to: lead.email,
         subject,
-        html: `<div style="font-family: Arial, sans-serif; white-space: pre-wrap;">${body}</div>`,
+        html: htmlBody,
         text: body,
       });
 
@@ -288,13 +331,22 @@ export const leadsRouter = router({
       }
 
       // Enregistrer dans l'historique
-      await db.insert(leadEmails).values({
+      const emailHistoryResult = await db.insert(leadEmails).values({
         leadId: input.leadId,
         templateId: input.templateId || null,
         subject,
         body,
         sentBy: ctx.user.id,
         status: "sent",
+      });
+
+      const emailQueueId = typeof emailHistoryResult === 'object' && 'insertId' in emailHistoryResult ? emailHistoryResult.insertId : emailHistoryResult[0];
+
+      // Créer le tracking
+      await db.insert(emailTracking).values({
+        emailQueueId: emailQueueId as number,
+        leadId: input.leadId,
+        trackingId,
       });
 
       // Mettre à jour la date de dernier contact

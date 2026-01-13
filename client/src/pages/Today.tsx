@@ -62,6 +62,7 @@ export default function Today() {
   // Queries
   const { data: entries = [], refetch } = trpc.timeEntries.listByDate.useQuery({ date: selectedDate });
   const { data: overdueTasks = [] } = trpc.tasks.list.useQuery();
+  const { data: overdueFollowUps = [] } = trpc.leads.getOverdueFollowUps.useQuery();
   const { data: clients = [] } = trpc.clients.list.useQuery();
   const { data: projects = [] } = trpc.projects.list.useQuery();
 
@@ -291,6 +292,59 @@ export default function Today() {
           />
         </div>
       </div>
+
+      {/* Relances à effectuer */}
+      {overdueFollowUps.length > 0 && (
+        <Card className="border-yellow-500/50 bg-yellow-500/5">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-yellow-500" />
+              <CardTitle className="text-lg text-yellow-500">
+                Relances à effectuer ({overdueFollowUps.length})
+              </CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {overdueFollowUps.slice(0, 5).map((lead: any) => {
+                const daysOverdue = Math.floor(
+                  (new Date().getTime() - new Date(lead.nextFollowUpDate).getTime()) / (1000 * 60 * 60 * 24)
+                );
+
+                return (
+                  <div
+                    key={lead.id}
+                    className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{lead.firstName} {lead.lastName}</p>
+                      <div className="flex gap-2 text-xs text-muted-foreground mt-1">
+                        {lead.company && <span>🏢 {lead.company}</span>}
+                        {lead.position && <span>💼 {lead.position}</span>}
+                        <span className="text-yellow-500 font-medium">
+                          ⏰ Relance en retard de {daysOverdue} jour{daysOverdue > 1 ? "s" : ""}
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.location.href = `/leads`}
+                    >
+                      Contacter
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+            {overdueFollowUps.length > 5 && (
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                + {overdueFollowUps.length - 5} autre{overdueFollowUps.length - 5 > 1 ? "s" : ""} relance{overdueFollowUps.length - 5 > 1 ? "s" : ""}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tâches en retard */}
       {overdueTasksList.length > 0 && (

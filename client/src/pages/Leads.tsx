@@ -105,6 +105,21 @@ export default function Leads() {
     }
   };
 
+  // Gérer la sélection multiple
+  const handleToggleSelect = (leadId: number) => {
+    setSelectedLeads((prev) =>
+      prev.includes(leadId) ? prev.filter((id) => id !== leadId) : [...prev, leadId]
+    );
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedLeads.length === filteredLeads.length) {
+      setSelectedLeads([]);
+    } else {
+      setSelectedLeads(filteredLeads.map((l) => l.id));
+    }
+  };
+
   // Convertir un lead en client
   const handleConvertToClient = async (leadId: number) => {
     try {
@@ -274,7 +289,17 @@ export default function Leads() {
         </div>
 
         {/* Affichage selon le mode */}
-        {viewMode === "list" && <ListView leads={filteredLeads} onConvert={handleConvertToClient} onRefetch={refetch} onSendEmail={handleOpenEmailDialog} />}
+        {viewMode === "list" && (
+          <ListView
+            leads={filteredLeads}
+            onConvert={handleConvertToClient}
+            onRefetch={refetch}
+            onSendEmail={handleOpenEmailDialog}
+            selectedLeads={selectedLeads}
+            onToggleSelect={handleToggleSelect}
+            onToggleSelectAll={handleToggleSelectAll}
+          />
+        )}
         {viewMode === "cards" && <CardsView leads={filteredLeads} onConvert={handleConvertToClient} onRefetch={refetch} onSendEmail={handleOpenEmailDialog} />}
         {viewMode === "kanban" && (
           <KanbanView
@@ -336,7 +361,7 @@ export default function Leads() {
 }
 
 // Composant ListView
-function ListView({ leads, onConvert, onRefetch, onSendEmail }: { leads: any[]; onConvert: (id: number) => void; onRefetch: () => void; onSendEmail: (lead: any) => void }) {
+function ListView({ leads, onConvert, onRefetch, onSendEmail, selectedLeads, onToggleSelect, onToggleSelectAll }: { leads: any[]; onConvert: (id: number) => void; onRefetch: () => void; onSendEmail: (lead: any) => void; selectedLeads: number[]; onToggleSelect: (id: number) => void; onToggleSelectAll: () => void; }) {
   return (
     <Card>
       <CardContent className="p-0">
@@ -344,6 +369,14 @@ function ListView({ leads, onConvert, onRefetch, onSendEmail }: { leads: any[]; 
           <table className="w-full">
             <thead className="bg-muted">
               <tr>
+                <th className="px-4 py-3 text-center text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={selectedLeads.length === leads.length && leads.length > 0}
+                    onChange={onToggleSelectAll}
+                    className="cursor-pointer"
+                  />
+                </th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Nom</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Entreprise</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
@@ -357,6 +390,14 @@ function ListView({ leads, onConvert, onRefetch, onSendEmail }: { leads: any[]; 
             <tbody className="divide-y">
               {leads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-muted/50">
+                  <td className="px-4 py-3 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedLeads.includes(lead.id)}
+                      onChange={() => onToggleSelect(lead.id)}
+                      className="cursor-pointer"
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <div className="font-medium">{lead.firstName} {lead.lastName}</div>
                     {lead.position && <div className="text-sm text-muted-foreground">{lead.position}</div>}

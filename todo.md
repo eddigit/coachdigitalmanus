@@ -558,3 +558,102 @@
 - [x] Bouton "Supprimer" dans le dialog avec confirmation
 - [x] Confirmation JavaScript avant suppression
 - [x] Rafraîchissement automatique après modification/suppression
+
+## Sélection Multiple Mode Liste (EN COURS)
+- [ ] Ajouter colonne checkbox dans le tableau ListView
+- [ ] État selectedLeads pour tracker les IDs sélectionnés
+- [ ] Checkbox "Tout sélectionner/Désélectionner" dans l'en-tête
+- [ ] Compteur de leads sélectionnés
+- [ ] Bouton "Envoi de masse" activé si sélection
+- [ ] Intégration avec le dialog BulkEmailForm existant
+
+## Page Historique Campagnes Emails (EN COURS)
+- [ ] Créer page EmailCampaigns.tsx
+- [ ] Afficher liste des campagnes avec statistiques
+- [ ] Colonnes : Nom, Date, Template, Leads ciblés, Envoyés, Échoués, En attente
+- [ ] Bouton "Relancer les échecs" pour chaque campagne
+- [ ] Graphiques Chart.js : taux de succès, évolution des envois
+- [ ] Filtres par date et statut
+- [ ] Ajouter route et menu dans sidebar
+
+## Système Rappels Automatiques (EN COURS)
+- [ ] Query tRPC pour récupérer leads avec nextFollowUpDate dépassée
+- [ ] Afficher badge notification dans Dashboard
+- [ ] Section "Relances à effectuer" dans page Aujourd'hui
+- [ ] Liste des leads en retard de relance
+- [ ] Bouton action rapide "Envoyer email" depuis la liste
+- [ ] Script cron pour email de rappel quotidien (optionnel)
+
+## Tracking Emails et Blacklist (EN COURS)
+
+### Base de données
+- [ ] Créer table emailTracking (emailId, leadId, openedAt, openCount, clickedAt, clickCount)
+- [ ] Créer table emailBlacklist (email, reason, unsubscribedAt)
+- [ ] Ajouter champs tracking dans emailQueue (trackingId, opened, clicked)
+
+### Tracking d'ouverture
+- [ ] Générer pixel invisible unique par email
+- [ ] Route publique /api/track/open/:trackingId
+- [ ] Enregistrer l'ouverture dans emailTracking
+- [ ] Mettre à jour openCount et openedAt
+
+### Tracking des clics
+- [ ] Wrapper les URLs avec /api/track/click/:trackingId/:urlId
+- [ ] Route publique /api/track/click avec redirection
+- [ ] Enregistrer le clic dans emailTracking
+- [ ] Mettre à jour clickCount et clickedAt
+
+### Système de blacklist
+- [ ] Lien de désabonnement dans chaque email
+- [ ] Page publique /unsubscribe/:email/:token
+- [ ] Vérifier email avant envoi (blacklist)
+- [ ] Interface admin pour gérer la blacklist
+- [ ] Export CSV de la blacklist
+
+### Statistiques
+- [ ] Taux d'ouverture par campagne
+- [ ] Taux de clic par campagne
+- [ ] Liste des emails ouverts/non ouverts
+- [ ] Liste des emails cliqués/non cliqués
+- [ ] Graphiques Chart.js dans EmailCampaigns
+
+## Tracking Emails et Blacklist (TERMINÉ)
+
+### Base de données
+- [x] Créer table emailTracking (ouvertures, clics)
+- [x] Créer table emailBlacklist (désabonnement)
+- [x] Ajouter champs trackingId, opened, clicked, openCount, clickCount, userAgent, ipAddress
+
+### Tracking d'ouverture
+- [x] Créer route publique /api/track/open/:trackingId
+- [x] Pixel invisible 1x1 transparent (GIF)
+- [x] Enregistrer ouverture avec userAgent et IP
+- [x] Incrémenter openCount à chaque ouverture
+
+### Tracking des clics
+- [x] Créer route publique /api/track/click/:trackingId?url=...
+- [x] Redirection vers l'URL cible
+- [x] Enregistrer clic avec userAgent et IP
+- [x] Wrapper automatique des URLs href dans les emails
+
+### Système de blacklist
+- [x] Route publique /unsubscribe/:email/:token
+- [x] Page de désabonnement avec confirmation HTML
+- [x] Ajout automatique à la blacklist
+- [x] Lien de désabonnement en bas de chaque email
+- [x] Vérification blacklist avant envoi (erreur si blacklisté)
+
+### Intégration dans l'envoi d'emails
+- [x] Créer tracking ID pour chaque email envoyé (randomBytes)
+- [x] Insérer pixel invisible dans le HTML
+- [x] Wrapper les URLs avec tracking de clics (regex href)
+- [x] Ajouter lien de désabonnement (token base64)
+- [x] Enregistrer tracking dans la base (table emailTracking)
+
+### Statistiques
+- [x] Taux d'ouverture par campagne (query getCampaignStats)
+- [x] Taux de clic par campagne
+- [x] Score d'engagement global (moyenne ouverture + clic)
+- [x] Affichage dans page EmailCampaigns avec cartes
+- [x] Router emailTrackingRouter avec toutes les mutations
+- [x] Routes publiques dans trackingRoutes.ts

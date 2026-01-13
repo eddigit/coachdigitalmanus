@@ -295,6 +295,44 @@ export type EmailQueueItem = typeof emailQueue.$inferSelect;
 export type InsertEmailQueueItem = typeof emailQueue.$inferInsert;
 
 // ============================================================================
+// EMAIL TRACKING (Tracking d'ouverture et de clics)
+// ============================================================================
+
+export const emailTracking = mysqlTable("emailTracking", {
+  id: int("id").autoincrement().primaryKey(),
+  emailQueueId: int("emailQueueId").notNull(),
+  leadId: int("leadId").notNull(),
+  trackingId: varchar("trackingId", { length: 255 }).notNull().unique(),
+  opened: boolean("opened").default(false).notNull(),
+  openedAt: timestamp("openedAt"),
+  openCount: int("openCount").default(0).notNull(),
+  clicked: boolean("clicked").default(false).notNull(),
+  clickedAt: timestamp("clickedAt"),
+  clickCount: int("clickCount").default(0).notNull(),
+  userAgent: text("userAgent"),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EmailTracking = typeof emailTracking.$inferSelect;
+export type InsertEmailTracking = typeof emailTracking.$inferInsert;
+
+// ============================================================================
+// EMAIL BLACKLIST (Désabonnement)
+// ============================================================================
+
+export const emailBlacklist = mysqlTable("emailBlacklist", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  reason: text("reason"),
+  unsubscribedAt: timestamp("unsubscribedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EmailBlacklist = typeof emailBlacklist.$inferSelect;
+export type InsertEmailBlacklist = typeof emailBlacklist.$inferInsert;
+
+// ============================================================================
 // PROJECTS
 // ============================================================================
 

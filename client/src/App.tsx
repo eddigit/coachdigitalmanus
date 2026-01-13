@@ -20,6 +20,7 @@ import Requirements from "./pages/Requirements";
 import Today from "./pages/Today";
 import Leads from "./pages/Leads";
 import Notes from "./pages/Notes";
+import EmailCampaigns from "./pages/EmailCampaigns";
 import ClientLogin from "./pages/client/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
 import ClientInvitation from "./pages/client/Invitation";
@@ -43,6 +44,7 @@ function Router() {
       <Route path="/today" component={Today} />
       <Route path="/leads" component={Leads} />
       <Route path="/notes" component={Notes} />
+      <Route path="/email-campaigns" component={EmailCampaigns} />
       
       {/* Routes espace client */}
       <Route path="/client/login" component={ClientLogin} />
