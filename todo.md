@@ -292,3 +292,8 @@
 - [ ] Statistiques globales (utilisateurs, projets, CA)
 - [ ] Logs d'activité et audit trail
 - [ ] Gestion paramètres système
+
+## UX Amélioration
+- [x] Déplacer widget profil (avatar, nom, email, dropdown) de sidebar vers header haut droite
+- [x] Afficher photo de profil si avatarUrl existe, sinon initiales
+- [x] Dropdown menu avec "Mon Profil" et "Sign out"
