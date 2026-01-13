@@ -109,3 +109,12 @@
 - [ ] Notification email automatique à Gilles
 - [ ] Gestion des demandes côté admin
 - [ ] Historique des échanges
+
+
+## Refonte Design - Identité Visuelle Coach Digital Paris
+- [x] Mettre à jour palette de couleurs avec orange #E67E50
+- [x] Remplacer bleu par orange pour tous les accents
+- [x] Créer logo "G" avec bordure orange
+- [x] Adapter tous les boutons CTA en orange
+- [x] Mettre à jour les hover states
+- [x] Vérifier cohérence sur toutes les pages

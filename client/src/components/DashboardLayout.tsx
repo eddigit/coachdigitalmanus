@@ -178,11 +178,18 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 border-2 border-primary rounded-sm flex items-center justify-center shrink-0">
+                    <span className="text-primary font-bold text-lg">G</span>
+                  </div>
                   <span className="font-semibold tracking-tight truncate">
-                    Navigation
+                    Coach Digital
                   </span>
                 </div>
-              ) : null}
+              ) : (
+                <div className="w-8 h-8 border-2 border-primary rounded-sm flex items-center justify-center shrink-0">
+                  <span className="text-primary font-bold text-lg">G</span>
+                </div>
+              )}
             </div>
           </SidebarHeader>
 
