@@ -13,6 +13,8 @@ import { stripeRouter } from "./stripeRouter";
 import { uploadRouter } from "./uploadRouter";
 import { messagesRouter } from "./messagesRouter";
 import { calendarRouter } from "./calendarRouter";
+import { projectVariablesRouter } from "./projectVariablesRouter";
+import { projectNotesRouter } from "./projectNotesRouter";
 
 // ============================================================================
 // SCHEMAS
@@ -781,6 +783,13 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+  
+  // ==========================================================================
+  // PROJECT VARIABLES & NOTES
+  // ==========================================================================
+  
+  projectVariables: projectVariablesRouter,
+  projectNotes: projectNotesRouter,
 });
 
 export type AppRouter = typeof appRouter;

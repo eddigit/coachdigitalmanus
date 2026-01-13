@@ -71,6 +71,13 @@
       "when": 1768315688022,
       "tag": "0009_natural_spectrum",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1768319018596,
+      "tag": "0010_freezing_klaw",
+      "breakpoints": true
     }
   ]
 }

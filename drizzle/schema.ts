@@ -465,3 +465,29 @@ export const calendarEvents = mysqlTable("calendarEvents", {
 
 export type CalendarEvent = typeof calendarEvents.$inferSelect;
 export type InsertCalendarEvent = typeof calendarEvents.$inferInsert;
+
+// Variables d'environnement des projets (credentials sécurisés)
+export const projectVariables = mysqlTable("projectVariables", {
+  id: int("id").primaryKey().autoincrement(),
+  projectId: int("projectId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  value: text("value").notNull(), // Stockage chiffré recommandé
+  type: varchar("type", { length: 50 }).notNull(), // hosting, smtp, api, ftp, other
+  description: text("description"),
+  isSecret: boolean("isSecret").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Notes des projets
+export const projectNotes = mysqlTable("projectNotes", {
+  id: int("id").primaryKey().autoincrement(),
+  projectId: int("projectId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  tags: varchar("tags", { length: 500 }), // Comma-separated tags
+  isPinned: boolean("isPinned").default(false),
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});

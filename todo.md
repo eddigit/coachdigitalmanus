@@ -321,3 +321,28 @@
 - [x] Bouton "Modifier" pour éditer le requirement
 - [x] Versioning automatique lors des modifications (backend existant)
 - [x] Export PDF du cahier des charges depuis la page détail projet
+
+## Onglets Manquants - Page Détail Projet
+### Variables d'environnement
+- [x] Créer table projectVariables dans le schéma
+- [x] Router tRPC pour CRUD variables (list, create, update, delete)
+- [x] Interface onglet avec liste des variables
+- [x] Formulaire ajout/édition variable (nom, valeur, type, description)
+- [x] Champs masqués par défaut avec bouton "Afficher"
+- [x] Types de variables (hébergement, SMTP, API, FTP, autre)
+- [x] Avertissement RGPD et sécurité
+
+### Notes projet
+- [ ] Créer table projectNotes dans le schéma
+- [ ] Router tRPC pour CRUD notes (list, create, update, delete)
+- [ ] Interface onglet avec liste des notes
+- [ ] Éditeur de texte riche (Textarea avec markdown)
+- [ ] Tags/catégories pour les notes
+- [ ] Épinglage des notes importantes
+- [ ] Recherche dans les notes
+
+### Tâches et Documents
+- [ ] Onglet Tâches : afficher les tâches liées au projet
+- [ ] Filtres par statut (todo, in_progress, done)
+- [ ] Onglet Documents : afficher les devis/factures du projet
+- [ ] Filtres par type (devis, facture) et statut

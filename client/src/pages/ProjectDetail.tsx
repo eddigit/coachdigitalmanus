@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
 import { useRoute } from "wouter";
-import { ArrowLeft, Briefcase, FileText, Code, StickyNote, CheckSquare, FileCheck, Plus, Edit, Download } from "lucide-react";
+import { ArrowLeft, Briefcase, FileText, Code, StickyNote, CheckSquare, FileCheck, Plus, Edit, Download, Eye, EyeOff, Trash2, AlertTriangle, Pin } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -22,6 +22,11 @@ export default function ProjectDetail() {
   const [isRequirementDialogOpen, setIsRequirementDialogOpen] = useState(false);
   const [editingRequirement, setEditingRequirement] = useState<any>(null);
   const [selectedRequirement, setSelectedRequirement] = useState<any>(null);
+  const [isVariableDialogOpen, setIsVariableDialogOpen] = useState(false);
+  const [editingVariable, setEditingVariable] = useState<any>(null);
+  const [visibleSecrets, setVisibleSecrets] = useState<Set<number>>(new Set());
+  const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<any>(null);
   
   const utils = trpc.useUtils();
 
@@ -34,6 +39,26 @@ export default function ProjectDetail() {
   const { data: requirements } = trpc.requirements.list.useQuery(
     { projectId },
     { enabled: !!projectId }
+  );
+  
+  const { data: variables } = trpc.projectVariables.list.useQuery(
+    { projectId },
+    { enabled: !!projectId }
+  );
+  
+  const { data: notes } = trpc.projectNotes.list.useQuery(
+    { projectId },
+    { enabled: !!projectId }
+  );
+  
+  const { data: tasks } = trpc.tasks.byProject.useQuery(
+    { projectId },
+    { enabled: !!projectId }
+  );
+  
+  const { data: documents } = trpc.documents.byClient.useQuery(
+    { clientId: project?.clientId || 0 },
+    { enabled: !!project?.clientId }
   );
   
   const createRequirement = trpc.requirements.create.useMutation({
@@ -85,6 +110,111 @@ export default function ProjectDetail() {
       toast.success("PDF téléchargé");
     } catch (error) {
       toast.error("Erreur lors de la génération du PDF");
+    }
+  };
+  
+  const createVariable = trpc.projectVariables.create.useMutation({
+    onSuccess: () => {
+      toast.success("Variable créée");
+      setIsVariableDialogOpen(false);
+      setEditingVariable(null);
+      utils.projectVariables.list.invalidate();
+    },
+    onError: () => toast.error("Erreur lors de la création"),
+  });
+  
+  const updateVariable = trpc.projectVariables.update.useMutation({
+    onSuccess: () => {
+      toast.success("Variable modifiée");
+      setIsVariableDialogOpen(false);
+      setEditingVariable(null);
+      utils.projectVariables.list.invalidate();
+    },
+    onError: () => toast.error("Erreur lors de la modification"),
+  });
+  
+  const deleteVariable = trpc.projectVariables.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Variable supprimée");
+      utils.projectVariables.list.invalidate();
+    },
+    onError: () => toast.error("Erreur lors de la suppression"),
+  });
+  
+  const handleVariableSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      projectId,
+      name: formData.get("name") as string,
+      value: formData.get("value") as string,
+      type: formData.get("type") as string,
+      description: formData.get("description") as string || undefined,
+      isSecret: formData.get("isSecret") === "true",
+    };
+    
+    if (editingVariable) {
+      updateVariable.mutate({ id: editingVariable.id, ...data });
+    } else {
+      createVariable.mutate(data);
+    }
+  };
+  
+  const toggleSecretVisibility = (id: number) => {
+    setVisibleSecrets(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+  
+  const createNote = trpc.projectNotes.create.useMutation({
+    onSuccess: () => {
+      toast.success("Note créée");
+      setIsNoteDialogOpen(false);
+      setEditingNote(null);
+      utils.projectNotes.list.invalidate();
+    },
+    onError: () => toast.error("Erreur lors de la création"),
+  });
+  
+  const updateNote = trpc.projectNotes.update.useMutation({
+    onSuccess: () => {
+      toast.success("Note modifiée");
+      setIsNoteDialogOpen(false);
+      setEditingNote(null);
+      utils.projectNotes.list.invalidate();
+    },
+    onError: () => toast.error("Erreur lors de la modification"),
+  });
+  
+  const deleteNote = trpc.projectNotes.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Note supprimée");
+      utils.projectNotes.list.invalidate();
+    },
+    onError: () => toast.error("Erreur lors de la suppression"),
+  });
+  
+  const handleNoteSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      projectId,
+      title: formData.get("title") as string,
+      content: formData.get("content") as string,
+      tags: formData.get("tags") as string || undefined,
+      isPinned: formData.get("isPinned") === "true",
+    };
+    
+    if (editingNote) {
+      updateNote.mutate({ id: editingNote.id, ...data });
+    } else {
+      createNote.mutate(data);
     }
   };
 
@@ -527,51 +657,512 @@ export default function ProjectDetail() {
           </TabsContent>
 
           {/* Onglet Variables d'environnement */}
-          <TabsContent value="env">
-            <Card>
-              <CardHeader>
-                <CardTitle>Variables d'Environnement</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Fonctionnalité à venir...</p>
+          <TabsContent value="env" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold">Variables d'Environnement</h3>
+                <p className="text-sm text-muted-foreground">Stockage sécurisé des credentials (hébergement, SMTP, API, FTP)</p>
+              </div>
+              <Dialog open={isVariableDialogOpen} onOpenChange={setIsVariableDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => setEditingVariable(null)}>
+                    <Plus className="h-4 w-4 mr-2" />Nouvelle Variable
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingVariable ? "Modifier la Variable" : "Nouvelle Variable"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleVariableSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="name">Nom</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        placeholder="Ex: FTP_HOST, SMTP_PASSWORD"
+                        defaultValue={editingVariable?.name || ""}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="value">Valeur</Label>
+                      <Input
+                        id="value"
+                        name="value"
+                        type="text"
+                        defaultValue={editingVariable?.value || ""}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="type">Type</Label>
+                      <Select name="type" defaultValue={editingVariable?.type || "other"}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="hosting">Hébergement</SelectItem>
+                          <SelectItem value="smtp">SMTP</SelectItem>
+                          <SelectItem value="api">API</SelectItem>
+                          <SelectItem value="ftp">FTP</SelectItem>
+                          <SelectItem value="other">Autre</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        rows={2}
+                        placeholder="Ex: Identifiants FTP du serveur OVH"
+                        defaultValue={editingVariable?.description || ""}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="isSecret"
+                        name="isSecret"
+                        value="true"
+                        defaultChecked={editingVariable?.isSecret !== false}
+                        className="h-4 w-4"
+                      />
+                      <Label htmlFor="isSecret" className="cursor-pointer">
+                        Masquer la valeur par défaut (recommandé pour les mots de passe)
+                      </Label>
+                    </div>
+                    
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button type="button" variant="outline" onClick={() => setIsVariableDialogOpen(false)}>
+                        Annuler
+                      </Button>
+                      <Button type="submit">
+                        {editingVariable ? "Modifier" : "Créer"}
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+            
+            <Card className="bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-900">
+              <CardContent className="py-3">
+                <div className="flex gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-yellow-900 dark:text-yellow-100">Avertissement RGPD et Sécurité</p>
+                    <p className="text-yellow-800 dark:text-yellow-200 mt-1">
+                      Ces informations sont stockées de manière sécurisée et ne sont accessibles que par vous. 
+                      Ne partagez jamais ces credentials par email. Utilisez cet espace sécurisé conforme RGPD.
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
+            
+            {!variables || variables.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Code className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">Aucune variable d'environnement</p>
+                  <Button onClick={() => setIsVariableDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />Ajouter la première variable
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {variables.map((variable: any) => (
+                  <Card key={variable.id}>
+                    <CardContent className="py-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold">{variable.name}</h4>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              variable.type === "hosting" ? "bg-blue-100 text-blue-700" :
+                              variable.type === "smtp" ? "bg-green-100 text-green-700" :
+                              variable.type === "api" ? "bg-purple-100 text-purple-700" :
+                              variable.type === "ftp" ? "bg-orange-100 text-orange-700" :
+                              "bg-gray-100 text-gray-700"
+                            }`}>
+                              {variable.type === "hosting" ? "Hébergement" :
+                               variable.type === "smtp" ? "SMTP" :
+                               variable.type === "api" ? "API" :
+                               variable.type === "ftp" ? "FTP" : "Autre"}
+                            </span>
+                          </div>
+                          {variable.description && (
+                            <p className="text-sm text-muted-foreground mb-2">{variable.description}</p>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <code className="text-sm bg-muted px-2 py-1 rounded">
+                              {variable.isSecret && !visibleSecrets.has(variable.id) 
+                                ? "•".repeat(20)
+                                : variable.value}
+                            </code>
+                            {variable.isSecret && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => toggleSecretVisibility(variable.id)}
+                              >
+                                {visibleSecrets.has(variable.id) ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingVariable(variable);
+                              setIsVariableDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (confirm("Supprimer cette variable ?")) {
+                                deleteVariable.mutate({ id: variable.id });
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Onglet Notes */}
-          <TabsContent value="notes">
-            <Card>
-              <CardHeader>
-                <CardTitle>Notes du Projet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Fonctionnalité à venir...</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="notes" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold">Notes du Projet</h3>
+                <p className="text-sm text-muted-foreground">Documentation, idées et informations importantes</p>
+              </div>
+              <Dialog open={isNoteDialogOpen} onOpenChange={setIsNoteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => setEditingNote(null)}>
+                    <Plus className="h-4 w-4 mr-2" />Nouvelle Note
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingNote ? "Modifier la Note" : "Nouvelle Note"}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleNoteSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="title">Titre</Label>
+                      <Input
+                        id="title"
+                        name="title"
+                        placeholder="Ex: Réunion client, Idées design"
+                        defaultValue={editingNote?.title || ""}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="content">Contenu</Label>
+                      <Textarea
+                        id="content"
+                        name="content"
+                        rows={8}
+                        placeholder="Saisissez vos notes ici..."
+                        defaultValue={editingNote?.content || ""}
+                        required
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="tags">Tags (séparés par des virgules)</Label>
+                      <Input
+                        id="tags"
+                        name="tags"
+                        placeholder="Ex: design, technique, urgent"
+                        defaultValue={editingNote?.tags || ""}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="isPinned"
+                        name="isPinned"
+                        value="true"
+                        defaultChecked={editingNote?.isPinned || false}
+                        className="h-4 w-4"
+                      />
+                      <Label htmlFor="isPinned" className="cursor-pointer">
+                        Épingler cette note en haut
+                      </Label>
+                    </div>
+                    
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button type="button" variant="outline" onClick={() => setIsNoteDialogOpen(false)}>
+                        Annuler
+                      </Button>
+                      <Button type="submit">
+                        {editingNote ? "Modifier" : "Créer"}
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+            
+            {!notes || notes.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <StickyNote className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">Aucune note pour ce projet</p>
+                  <Button onClick={() => setIsNoteDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />Créer la première note
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {notes
+                  .sort((a: any, b: any) => {
+                    if (a.isPinned && !b.isPinned) return -1;
+                    if (!a.isPinned && b.isPinned) return 1;
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                  })
+                  .map((note: any) => (
+                  <Card key={note.id} className={note.isPinned ? "border-[#E67E50]" : ""}>
+                    <CardContent className="py-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          {note.isPinned && <Pin className="h-4 w-4 text-[#E67E50]" />}
+                          <h4 className="font-semibold">{note.title}</h4>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingNote(note);
+                              setIsNoteDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (confirm("Supprimer cette note ?")) {
+                                deleteNote.mutate({ id: note.id });
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm whitespace-pre-wrap mb-2">{note.content}</p>
+                      {note.tags && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {note.tags.split(",").map((tag: string, idx: number) => (
+                            <span key={idx} className="px-2 py-0.5 bg-muted rounded text-xs">
+                              {tag.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {new Date(note.createdAt).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Onglet Tâches */}
-          <TabsContent value="tasks">
-            <Card>
-              <CardHeader>
-                <CardTitle>Tâches du Projet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Fonctionnalité à venir...</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="tasks" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold">Tâches du Projet</h3>
+                <p className="text-sm text-muted-foreground">Liste des tâches liées à ce projet</p>
+              </div>
+              <Link href="/tasks">
+                <Button variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />Nouvelle Tâche
+                </Button>
+              </Link>
+            </div>
+            
+            {!tasks || tasks.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <CheckSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">Aucune tâche pour ce projet</p>
+                  <Link href="/tasks">
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />Créer la première tâche
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {tasks.map((task: any) => (
+                  <Card key={task.id}>
+                    <CardContent className="py-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold">{task.title}</h4>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              task.status === "done" ? "bg-green-100 text-green-700" :
+                              task.status === "in_progress" ? "bg-blue-100 text-blue-700" :
+                              task.status === "review" ? "bg-purple-100 text-purple-700" :
+                              task.status === "cancelled" ? "bg-gray-100 text-gray-700" :
+                              "bg-yellow-100 text-yellow-700"
+                            }`}>
+                              {task.status === "done" ? "Terminée" :
+                               task.status === "in_progress" ? "En cours" :
+                               task.status === "review" ? "En revue" :
+                               task.status === "cancelled" ? "Annulée" : "À faire"}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              task.priority === "urgent" ? "bg-red-100 text-red-700" :
+                              task.priority === "high" ? "bg-orange-100 text-orange-700" :
+                              task.priority === "normal" ? "bg-blue-100 text-blue-700" :
+                              "bg-gray-100 text-gray-700"
+                            }`}>
+                              {task.priority === "urgent" ? "Urgent" :
+                               task.priority === "high" ? "Haute" :
+                               task.priority === "normal" ? "Normale" : "Basse"}
+                            </span>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm text-muted-foreground mb-2">{task.description}</p>
+                          )}
+                          <div className="flex gap-4 text-xs text-muted-foreground">
+                            {task.dueDate && (
+                              <span>Échéance: {new Date(task.dueDate).toLocaleDateString("fr-FR")}</span>
+                            )}
+                            {task.estimatedHours && (
+                              <span>{task.estimatedHours}h estimées</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Onglet Documents */}
-          <TabsContent value="documents">
-            <Card>
-              <CardHeader>
-                <CardTitle>Documents du Projet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Fonctionnalité à venir...</p>
-              </CardContent>
-            </Card>
+          <TabsContent value="documents" className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold">Documents du Projet</h3>
+                <p className="text-sm text-muted-foreground">Devis et factures liés au client</p>
+              </div>
+              <Link href="/documents">
+                <Button variant="outline">
+                  <Plus className="h-4 w-4 mr-2" />Nouveau Document
+                </Button>
+              </Link>
+            </div>
+            
+            {!documents || documents.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground mb-4">Aucun document pour ce client</p>
+                  <Link href="/documents">
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />Créer le premier document
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {documents.map((doc: any) => (
+                  <Card key={doc.id}>
+                    <CardContent className="py-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold">{doc.number}</h4>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              doc.type === "quote" ? "bg-blue-100 text-blue-700" :
+                              doc.type === "invoice" ? "bg-green-100 text-green-700" :
+                              "bg-purple-100 text-purple-700"
+                            }`}>
+                              {doc.type === "quote" ? "Devis" :
+                               doc.type === "invoice" ? "Facture" : "Avoir"}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              doc.status === "paid" ? "bg-green-100 text-green-700" :
+                              doc.status === "sent" ? "bg-blue-100 text-blue-700" :
+                              doc.status === "accepted" ? "bg-purple-100 text-purple-700" :
+                              doc.status === "rejected" ? "bg-red-100 text-red-700" :
+                              doc.status === "cancelled" ? "bg-gray-100 text-gray-700" :
+                              "bg-yellow-100 text-yellow-700"
+                            }`}>
+                              {doc.status === "paid" ? "Payé" :
+                               doc.status === "sent" ? "Envoyé" :
+                               doc.status === "accepted" ? "Accepté" :
+                               doc.status === "rejected" ? "Refusé" :
+                               doc.status === "cancelled" ? "Annulé" : "Brouillon"}
+                            </span>
+                          </div>
+                          {doc.subject && (
+                            <p className="text-sm text-muted-foreground mb-2">{doc.subject}</p>
+                          )}
+                          <div className="flex gap-4 text-xs text-muted-foreground">
+                            <span>Date: {new Date(doc.date).toLocaleDateString("fr-FR")}</span>
+                            <span className="font-semibold text-foreground">{doc.totalTtc} € TTC</span>
+                            {doc.dueDate && (
+                              <span>Échéance: {new Date(doc.dueDate).toLocaleDateString("fr-FR")}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
