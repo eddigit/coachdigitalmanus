@@ -364,3 +364,14 @@
 - [x] Rafraîchissement automatique toutes les 30 secondes
 - [x] Marquer comme lu / Supprimer notifications
 - [ ] Dropdown menu notifications avec liste et actions
+
+## Templates de Documents Personnalisables
+- [x] Créer table documentTemplates dans le schéma
+- [x] Router tRPC pour CRUD templates (getDefault, create, update)
+- [x] Page Paramètres avec onglets (Entreprise, Templates)
+- [x] Formulaire personnalisation template (logo, couleurs, mentions légales, CGV)
+- [x] Upload logo entreprise pour les documents
+- [x] Sélecteur de couleurs pour le thème des documents
+- [x] Prévisualisation en temps réel du rendu PDF
+- [ ] Intégrer les templates dans pdfGenerator.ts (TODO)
+- [x] Bouton "Réinitialiser aux valeurs par défaut"

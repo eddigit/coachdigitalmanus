@@ -16,6 +16,7 @@ import { calendarRouter } from "./calendarRouter";
 import { projectVariablesRouter } from "./projectVariablesRouter";
 import { projectNotesRouter } from "./projectNotesRouter";
 import { notificationsRouter } from "./notificationsRouter";
+import { documentTemplatesRouter } from "./documentTemplatesRouter";
 
 // ============================================================================
 // SCHEMAS
@@ -797,6 +798,12 @@ export const appRouter = router({
   // ==========================================================================
   
   notifications: notificationsRouter,
+  
+  // ==========================================================================
+  // DOCUMENT TEMPLATES
+  // ==========================================================================
+  
+  documentTemplates: documentTemplatesRouter,
 });
 
 export type AppRouter = typeof appRouter;

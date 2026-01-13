@@ -509,3 +509,32 @@ export const notifications = mysqlTable("notifications", {
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+
+// ==========================================================================
+// DOCUMENT TEMPLATES
+// ==========================================================================
+
+export const documentTemplates = mysqlTable("documentTemplates", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("userId").notNull(), // Propriétaire du template
+  type: mysqlEnum("type", ["quote", "invoice"]).notNull(), // Type de document
+  name: varchar("name", { length: 255 }).notNull(), // Nom du template
+  logoUrl: text("logoUrl"), // URL du logo entreprise
+  primaryColor: varchar("primaryColor", { length: 7 }).default("#E67E50"), // Couleur principale (hex)
+  secondaryColor: varchar("secondaryColor", { length: 7 }).default("#1E293B"), // Couleur secondaire
+  companyName: varchar("companyName", { length: 255 }),
+  companyAddress: text("companyAddress"),
+  companyPhone: varchar("companyPhone", { length: 50 }),
+  companyEmail: varchar("companyEmail", { length: 255 }),
+  companySiret: varchar("companySiret", { length: 50 }),
+  companyTva: varchar("companyTva", { length: 50 }),
+  legalMentions: text("legalMentions"), // Mentions légales
+  termsAndConditions: text("termsAndConditions"), // Conditions générales
+  footerText: text("footerText"), // Texte du pied de page
+  isDefault: boolean("isDefault").default(false), // Template par défaut
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+export type DocumentTemplate = typeof documentTemplates.$inferSelect;
+export type InsertDocumentTemplate = typeof documentTemplates.$inferInsert;
