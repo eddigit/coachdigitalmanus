@@ -792,3 +792,9 @@
 - [x] Demander permission notifications après 5 secondes
 - [x] Support notifications via service worker
 - [x] Intégrer dans App.tsx
+
+## Correction erreur Service Worker HTTPS (TERMINÉ)
+- [x] Modifier usePWA pour vérifier si la page est en HTTPS
+- [x] Désactiver l'enregistrement du Service Worker en développement (HTTP)
+- [x] Activer uniquement en production (HTTPS ou localhost)
+- [x] Ajouter log informatif quand Service Worker est désactivé

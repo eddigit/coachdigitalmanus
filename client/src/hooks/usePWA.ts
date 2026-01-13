@@ -10,8 +10,13 @@ export function usePWA() {
       setIsInstalled(true);
     }
 
-    // Enregistrer le service worker
-    if ('serviceWorker' in navigator) {
+    // Vérifier si la page est en HTTPS ou localhost
+    const isSecureContext = window.isSecureContext || 
+                           window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1';
+
+    // Enregistrer le service worker uniquement en contexte sécurisé
+    if ('serviceWorker' in navigator && isSecureContext) {
       window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('/sw.js')
@@ -39,6 +44,8 @@ export function usePWA() {
             console.error('[PWA] Erreur lors de l\'enregistrement du Service Worker:', error);
           });
       });
+    } else if (!isSecureContext) {
+      console.log('[PWA] Service Worker désactivé : contexte non sécurisé (HTTPS requis en production)');
     }
 
     // Écouter l'événement beforeinstallprompt
