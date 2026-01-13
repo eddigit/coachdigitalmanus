@@ -550,3 +550,11 @@
 - [x] Fonctionnalité d'épinglage des notes
 - [x] Recherche dans les notes
 - [x] Vérification: aucune note dans l'ancien système à importer
+
+## Amélioration Kanban Prospection (TERMINÉ)
+- [x] Rendre les cartes cliquables dans le mode Kanban
+- [x] Ouvrir un dialog de modification au clic sur une carte
+- [x] Formulaire complet avec tous les champs (nom, email, téléphone, entreprise, montant, probabilité, statut, notes, prochaine relance)
+- [x] Bouton "Supprimer" dans le dialog avec confirmation
+- [x] Confirmation JavaScript avant suppression
+- [x] Rafraîchissement automatique après modification/suppression

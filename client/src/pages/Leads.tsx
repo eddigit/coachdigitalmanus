@@ -57,6 +57,8 @@ export default function Leads() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isBulkEmailDialogOpen, setIsBulkEmailDialogOpen] = useState(false);
   const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingLead, setEditingLead] = useState<any>(null);
 
   const handleOpenEmailDialog = (lead: any) => {
     setSelectedLead(lead);
@@ -281,6 +283,10 @@ export default function Leads() {
             onConvert={handleConvertToClient}
             onRefetch={refetch}
             onSendEmail={handleOpenEmailDialog}
+            onEdit={(lead) => {
+              setEditingLead(lead);
+              setIsEditDialogOpen(true);
+            }}
           />
         )}
 
@@ -296,6 +302,28 @@ export default function Leads() {
                 lead={selectedLead}
                 onSuccess={() => {
                   setIsEmailDialogOpen(false);
+                  refetch();
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Dialog d'édition */}
+        {editingLead && (
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Modifier le lead</DialogTitle>
+                <DialogDescription>
+                  {editingLead.firstName} {editingLead.lastName} - {editingLead.company || "Sans entreprise"}
+                </DialogDescription>
+              </DialogHeader>
+              <EditLeadForm
+                lead={editingLead}
+                onSuccess={() => {
+                  setIsEditDialogOpen(false);
+                  setEditingLead(null);
                   refetch();
                 }}
               />
@@ -434,12 +462,14 @@ function KanbanView({
   onConvert,
   onRefetch,
   onSendEmail,
+  onEdit,
 }: {
   leadsByStatus: Record<LeadStatus, any[]>;
   onDragEnd: (result: DropResult) => void;
   onConvert: (id: number) => void;
   onRefetch: () => void;
   onSendEmail: (lead: any) => void;
+  onEdit: (lead: any) => void;
 }) {
   const statuses: LeadStatus[] = ["suspect", "analyse", "negociation", "conclusion"];
 
@@ -472,7 +502,8 @@ function KanbanView({
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`cursor-move ${
+                          onClick={() => onEdit(lead)}
+                          className={`cursor-pointer hover:shadow-md transition-shadow ${
                             snapshot.isDragging ? "shadow-lg rotate-2" : ""
                           }`}
                         >
@@ -1003,6 +1034,210 @@ function BulkEmailForm({ leadIds, onSuccess }: { leadIds: number[]; onSuccess: (
           {createCampaignMutation.isPending || sendCampaignMutation.isPending
             ? "Envoi en cours..."
             : "Créer et envoyer la campagne"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+// Composant EditLeadForm
+function EditLeadForm({ lead, onSuccess }: { lead: any; onSuccess: () => void }) {
+  const [formData, setFormData] = useState({
+    firstName: lead.firstName || "",
+    lastName: lead.lastName || "",
+    email: lead.email || "",
+    phone: lead.phone || "",
+    company: lead.company || "",
+    position: lead.position || "",
+    address: lead.address || "",
+    postalCode: lead.postalCode || "",
+    city: lead.city || "",
+    country: lead.country || "France",
+    status: lead.status || "suspect",
+    potentialAmount: lead.potentialAmount || "",
+    probability: lead.probability?.toString() || "25",
+    source: lead.source || "",
+    notes: lead.notes || "",
+    nextFollowUpDate: lead.nextFollowUpDate ? new Date(lead.nextFollowUpDate).toISOString().split("T")[0] : "",
+  });
+
+  const updateMutation = trpc.leads.update.useMutation();
+  const deleteMutation = trpc.leads.delete.useMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateMutation.mutateAsync({
+        id: lead.id,
+        ...formData,
+        potentialAmount: formData.potentialAmount ? parseFloat(formData.potentialAmount) : undefined,
+        probability: parseInt(formData.probability),
+        nextFollowUpDate: formData.nextFollowUpDate || undefined,
+      });
+      toast.success("Lead modifié avec succès");
+      onSuccess();
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors de la modification");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer ce lead (${lead.firstName} ${lead.lastName}) ?`)) {
+      return;
+    }
+    try {
+      await deleteMutation.mutateAsync({ id: lead.id });
+      toast.success("Lead supprimé avec succès");
+      onSuccess();
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors de la suppression");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="firstName">Prénom *</Label>
+          <Input
+            id="firstName"
+            value={formData.firstName}
+            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="lastName">Nom *</Label>
+          <Input
+            id="lastName"
+            value={formData.lastName}
+            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="phone">Téléphone</Label>
+          <Input
+            id="phone"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="company">Entreprise</Label>
+          <Input
+            id="company"
+            value={formData.company}
+            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="position">Poste</Label>
+          <Input
+            id="position"
+            value={formData.position}
+            onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="status">Statut</Label>
+          <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="suspect">Suspect</SelectItem>
+              <SelectItem value="analyse">Analyse</SelectItem>
+              <SelectItem value="negociation">Négociation</SelectItem>
+              <SelectItem value="conclusion">Conclusion</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="source">Source</Label>
+          <Input
+            id="source"
+            value={formData.source}
+            onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+            placeholder="LinkedIn, Référence, etc."
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="potentialAmount">Montant potentiel (€)</Label>
+          <Input
+            id="potentialAmount"
+            type="number"
+            step="0.01"
+            value={formData.potentialAmount}
+            onChange={(e) => setFormData({ ...formData, potentialAmount: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="probability">Probabilité (%)</Label>
+          <Input
+            id="probability"
+            type="number"
+            min="0"
+            max="100"
+            value={formData.probability}
+            onChange={(e) => setFormData({ ...formData, probability: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="nextFollowUpDate">Prochaine relance</Label>
+        <Input
+          id="nextFollowUpDate"
+          type="date"
+          value={formData.nextFollowUpDate}
+          onChange={(e) => setFormData({ ...formData, nextFollowUpDate: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="notes">Notes</Label>
+        <Textarea
+          id="notes"
+          rows={4}
+          value={formData.notes}
+          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+          placeholder="Notes internes sur ce lead..."
+        />
+      </div>
+
+      <div className="flex justify-between gap-2 pt-4 border-t">
+        <Button
+          type="button"
+          variant="destructive"
+          onClick={handleDelete}
+          disabled={deleteMutation.isPending}
+        >
+          {deleteMutation.isPending ? "Suppression..." : "Supprimer"}
+        </Button>
+        <Button type="submit" disabled={updateMutation.isPending}>
+          {updateMutation.isPending ? "Modification..." : "Enregistrer"}
         </Button>
       </div>
     </form>
