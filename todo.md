@@ -94,3 +94,18 @@
 - [ ] Refonte cards dashboard
 - [ ] Refonte formulaires
 - [ ] Refonte boutons et interactions
+
+
+## Espace Client Sécurisé (demande utilisateur prioritaire)
+- [x] Créer table clientUsers pour authentification séparée
+- [x] Système login/password pour clients (URL /client)
+- [x] Système d'invitation par email
+- [ ] Page login client (/client/login)
+- [ ] Dashboard client avec ses documents
+- [ ] Liste devis/factures accessibles au client
+- [ ] Messagerie sécurisée client-coach
+- [ ] Coffre-fort RGPD pour credentials (API, logins, passwords)
+- [ ] Formulaire de demande avec onboarding
+- [ ] Notification email automatique à Gilles
+- [ ] Gestion des demandes côté admin
+- [ ] Historique des échanges

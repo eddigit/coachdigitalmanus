@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, date } from "drizzle-orm/mysql-core";
 
 /**
  * COACH DIGITAL - Schéma de base de données
@@ -23,6 +23,89 @@ export const users = mysqlTable("users", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+
+// ============================================================================
+// CLIENT USERS (Authentification espace client séparée)
+// ============================================================================
+
+export const clientUsers = mysqlTable("clientUsers", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: int("clientId").notNull(), // Lié à la table clients
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  lastLogin: timestamp("lastLogin"),
+  invitationToken: varchar("invitationToken", { length: 64 }),
+  invitationSentAt: timestamp("invitationSentAt"),
+  passwordResetToken: varchar("passwordResetToken", { length: 64 }),
+  passwordResetExpires: timestamp("passwordResetExpires"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ClientUser = typeof clientUsers.$inferSelect;
+export type InsertClientUser = typeof clientUsers.$inferInsert;
+
+// ============================================================================
+// CLIENT REQUESTS (Demandes clients avec onboarding)
+// ============================================================================
+
+export const clientRequests = mysqlTable("clientRequests", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: int("clientId").notNull(),
+  requestType: mysqlEnum("requestType", [
+    "coaching",
+    "website",
+    "app",
+    "ia_integration",
+    "optimization",
+    "other"
+  ]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  budget: decimal("budget", { precision: 10, scale: 2 }),
+  deadline: date("deadline"),
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
+  status: mysqlEnum("status", [
+    "pending",
+    "in_review",
+    "accepted",
+    "in_progress",
+    "completed",
+    "rejected"
+  ]).default("pending").notNull(),
+  adminNotes: text("adminNotes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ClientRequest = typeof clientRequests.$inferSelect;
+export type InsertClientRequest = typeof clientRequests.$inferInsert;
+
+// ============================================================================
+// CLIENT SECRETS (Coffre-fort RGPD pour credentials)
+// ============================================================================
+
+export const clientSecrets = mysqlTable("clientSecrets", {
+  id: int("id").autoincrement().primaryKey(),
+  clientId: int("clientId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  category: mysqlEnum("category", [
+    "api_key",
+    "login_password",
+    "hosting",
+    "domain",
+    "other"
+  ]).notNull(),
+  description: text("description"),
+  // Données encryptées
+  encryptedData: text("encryptedData").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ClientSecret = typeof clientSecrets.$inferSelect;
+export type InsertClientSecret = typeof clientSecrets.$inferInsert;
 
 // ============================================================================
 // COMPANY (Informations de l'entreprise de Gilles)
