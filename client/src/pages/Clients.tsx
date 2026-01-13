@@ -148,7 +148,7 @@ export default function Clients() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Clients</h1>

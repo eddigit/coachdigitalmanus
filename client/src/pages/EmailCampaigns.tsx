@@ -31,7 +31,7 @@ export default function EmailCampaigns() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
         <div>
           <h1 className="text-3xl font-bold">Historique des Campagnes d'Emails</h1>
           <p className="text-muted-foreground">Suivez les performances de vos campagnes d'envoi de masse</p>

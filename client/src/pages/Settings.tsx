@@ -17,7 +17,7 @@ export default function Settings() {
   
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Paramètres</h1>
         <p className="text-muted-foreground">

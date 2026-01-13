@@ -827,3 +827,12 @@
 - [x] Ajouter overflow-x-hidden sur SidebarInset et main
 - [x] Ajouter max-w-full sur header et main content
 - [x] Toutes les pages sont maintenant fixes sans débordement latéral
+
+## Correction responsive pages problématiques (TERMINÉ)
+- [x] Corriger page Prospection (Leads) - tableaux flottants
+- [x] Corriger page détail Projet - sous-menus non burger
+- [x] Corriger page Documents - défilement horizontal
+- [x] Auditer toutes les autres pages pour le responsive
+- [x] Ajouter wrapper max-w-full à tous les conteneurs
+- [x] Ajouter overflow-x-hidden à toutes les pages
+- [x] Corriger les tableaux avec min-w-max

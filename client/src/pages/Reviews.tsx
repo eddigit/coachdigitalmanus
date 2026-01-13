@@ -72,7 +72,7 @@ export default function Reviews() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
         <div>
           <h1 className="text-3xl font-bold">Avis Clients</h1>
           <p className="text-muted-foreground">

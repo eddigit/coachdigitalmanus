@@ -182,7 +182,7 @@ export default function Requirements() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Cahiers des charges</h1>
@@ -413,7 +413,7 @@ export default function Requirements() {
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-6">
+            <div className="space-y-6 max-w-full overflow-x-hidden">
               {selectedRequirement.description && (
                 <div>
                   <h3 className="font-medium mb-2">Description</h3>

@@ -61,7 +61,7 @@ export default function Messages() {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-full overflow-x-hidden">
           <h1 className="text-3xl font-bold">Messages</h1>
           <Card>
             <CardContent className="py-12 text-center">
@@ -76,7 +76,7 @@ export default function Messages() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Messages</h1>

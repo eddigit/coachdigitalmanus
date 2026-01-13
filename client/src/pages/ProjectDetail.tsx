@@ -243,7 +243,7 @@ export default function ProjectDetail() {
 
   return (
     <DashboardLayout>
-      <div className="container max-w-7xl py-6">
+      <div className="container max-w-full py-6 px-3 sm:px-4 md:px-6 overflow-x-hidden">
         {/* Header */}
         <div className="mb-6">
           <Link href="/projects">

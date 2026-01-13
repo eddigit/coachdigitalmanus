@@ -133,7 +133,7 @@ export default function Leads() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -363,10 +363,10 @@ export default function Leads() {
 // Composant ListView
 function ListView({ leads, onConvert, onRefetch, onSendEmail, selectedLeads, onToggleSelect, onToggleSelectAll }: { leads: any[]; onConvert: (id: number) => void; onRefetch: () => void; onSendEmail: (lead: any) => void; selectedLeads: number[]; onToggleSelect: (id: number) => void; onToggleSelectAll: () => void; }) {
   return (
-    <Card>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+    <Card className="max-w-full overflow-x-hidden">
+      <CardContent className="p-0 max-w-full overflow-x-auto">
+        <div className="overflow-x-auto max-w-full">
+          <table className="w-full min-w-max">
             <thead className="bg-muted">
               <tr>
                 <th className="px-4 py-3 text-center text-sm font-medium">
@@ -438,7 +438,7 @@ function ListView({ leads, onConvert, onRefetch, onSendEmail, selectedLeads, onT
 // Composant CardsView
 function CardsView({ leads, onConvert, onRefetch, onSendEmail }: { leads: any[]; onConvert: (id: number) => void; onRefetch: () => void; onSendEmail: (lead: any) => void }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-full">
       {leads.map((lead) => (
         <Card key={lead.id} className="hover:shadow-lg transition-shadow">
           <CardHeader>
@@ -516,7 +516,7 @@ function KanbanView({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-full overflow-x-hidden">
         {statuses.map((status) => (
           <div key={status} className="flex flex-col">
             <div className="mb-3">
