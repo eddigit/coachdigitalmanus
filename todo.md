@@ -521,3 +521,14 @@
 - [x] Tests vitest pour envoi de masse
 - [x] Tests de la limite 500/jour
 - [x] Tests de détection des doublons
+
+## Import Ancienne Base de Données (TERMINÉ)
+- [x] Analyser la structure du fichier JSON GKAC_Export (23 entités)
+- [x] Créer script d'import avec mapping des données
+- [x] Mapper clients → table clients (14 clients importés)
+- [x] Mapper projets → table projects (10 projets importés)
+- [x] Mapper opportunités → table leads (10 leads déjà présents)
+- [x] Mapper documents → table documents (18 documents importés)
+- [x] Mapper templates emails → table emailTemplates (4 templates importés)
+- [x] Exécuter l'import et valider les données
+- [x] Rapport d'import : 32 importés, 42 ignorés (doublons), 14 erreurs (tâches)
