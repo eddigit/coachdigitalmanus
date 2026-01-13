@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import NewRequestForm from "@/components/NewRequestForm";
 import ClientCredentialsManager from "@/components/ClientCredentialsManager";
 import ClientDocuments from "@/components/ClientDocuments";
+import ClientPayments from "@/components/ClientPayments";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
@@ -206,6 +207,11 @@ export default function ClientDashboard() {
 
           {/* Documents récents */}
           <ClientDocuments clientUserId={clientUser.id} />
+        </div>
+
+        {/* Paiements */}
+        <div className="mt-6">
+          <ClientPayments clientUserId={clientUser.id} />
         </div>
 
         {/* CTA Section */}

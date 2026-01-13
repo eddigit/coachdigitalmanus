@@ -8,6 +8,8 @@ import { getDb } from "./db";
 import * as clientAuth from "./clientAuth";
 import { clientUsers } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { notifyDocumentCreated, notifyQuoteConverted, getClientLoginUrl } from "./emailNotifications";
+import { stripeRouter } from "./stripeRouter";
 
 // ============================================================================
 // SCHEMAS
@@ -84,6 +86,7 @@ const companySchema = z.object({
 
 export const appRouter = router({
   system: systemRouter,
+  stripe: stripeRouter,
   
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
@@ -205,6 +208,20 @@ export const appRouter = router({
             tvaRate: line.tvaRate,
           })),
         });
+        
+        // Récupérer la facture créée pour la notification
+        const invoice = await db.getDocumentById(invoiceId);
+        if (invoice) {
+          const client = await db.getClientById(quote.clientId);
+          if (client) {
+            await notifyQuoteConverted({
+              clientName: `${client.firstName} ${client.lastName}`,
+              quoteNumber: quote.number,
+              invoiceNumber: invoice.number,
+              totalTtc: invoice.totalTtc,
+            });
+          }
+        }
         
         return { success: true, invoiceId };
       }),
@@ -377,7 +394,28 @@ export const appRouter = router({
         })),
       }))
       .mutation(async ({ input }) => {
-        return await db.createDocument(input);
+        const documentId = await db.createDocument(input);
+        
+        // Récupérer le document créé pour la notification
+        const document = await db.getDocumentById(documentId);
+        if (document) {
+          // Récupérer les infos client
+          const client = await db.getClientById(input.clientId);
+          if (client && client.email) {
+            // Envoyer notification
+            await notifyDocumentCreated({
+              clientEmail: client.email,
+              clientName: `${client.firstName} ${client.lastName}`,
+              documentType: input.type as "quote" | "invoice",
+              documentNumber: document.number,
+              totalTtc: document.totalTtc,
+              dueDate: document.dueDate ? new Date(document.dueDate) : undefined,
+              loginUrl: getClientLoginUrl(),
+            });
+          }
+        }
+        
+        return documentId;
       }),
     
     update: protectedProcedure

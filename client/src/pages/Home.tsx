@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { Users, Briefcase, CheckSquare, Euro } from "lucide-react";
@@ -121,29 +122,8 @@ export default function Home() {
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Activité Récente</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Les dernières activités s'afficheront ici
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Prochaines Échéances</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Les tâches à venir s'afficheront ici
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Tableau de bord analytique */}
+        <AnalyticsDashboard />
       </div>
     </DashboardLayout>
   );

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE documents \nADD COLUMN stripePaymentIntentId VARCHAR(255),\nADD COLUMN stripeCheckoutSessionId VARCHAR(255),\nADD COLUMN paidAt TIMESTAMP;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ocAJesqVvSPKcLA.8e21e7f2c662 --database 5evvQHYxZbgpbBkTD2rF9K --execute ALTER TABLE documents \nADD COLUMN stripePaymentIntentId VARCHAR(255),\nADD COLUMN stripeCheckoutSessionId VARCHAR(255),\nADD COLUMN paidAt TIMESTAMP;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1051
+}

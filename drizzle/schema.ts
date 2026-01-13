@@ -280,6 +280,10 @@ export const documents = mysqlTable("documents", {
   acompteAmount: decimal("acompteAmount", { precision: 10, scale: 2 }),
   // PDF
   pdfUrl: text("pdfUrl"),
+  // Stripe
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 255 }),
+  stripeCheckoutSessionId: varchar("stripeCheckoutSessionId", { length: 255 }),
+  paidAt: timestamp("paidAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

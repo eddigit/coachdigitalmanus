@@ -227,3 +227,18 @@
 - [x] Bouton "Convertir en facture" sur les devis acceptés
 - [x] Copie automatique des lignes devis → facture
 - [ ] Tests complets des 3 nouvelles fonctionnalités
+
+## Nouvelles Fonctionnalités - Phase 2 (demande utilisateur)
+- [x] Notifications email automatiques lors création devis/factures
+- [x] Envoi notification au propriétaire avec infos document
+- [x] Lien direct vers espace client dans les notifications
+- [x] Notification lors conversion devis→facture
+- [x] Tableau de bord analytique avec graphiques (Chart.js)
+- [x] Graphique évolution chiffre d'affaires (6 derniers mois)
+- [x] Graphique répartition clients par catégorie
+- [x] Graphique taux conversion devis→factures
+- [x] Intégration Stripe pour paiements en ligne
+- [x] Configuration Stripe avec webdev_add_feature
+- [x] Bouton "Payer" sur les factures dans espace client
+- [ ] Webhook Stripe pour mise à jour automatique statuts
+- [x] Composant ClientPayments avec liste factures et paiement
