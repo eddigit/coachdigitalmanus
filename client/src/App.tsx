@@ -14,6 +14,8 @@ import Calendar from "./pages/Calendar";
 import TimeTracking from "./pages/TimeTracking";
 import Messages from "./pages/Messages";
 import Vault from "./pages/Vault";
+import ClientLogin from "./pages/client/ClientLogin";
+import ClientDashboard from "./pages/client/ClientDashboard";
 
 function Router() {
   return (
@@ -28,6 +30,12 @@ function Router() {
       <Route path="/time-tracking" component={TimeTracking} />
       <Route path="/messages" component={Messages} />
       <Route path="/vault" component={Vault} />
+      
+      {/* Routes espace client */}
+      <Route path="/client/login" component={ClientLogin} />
+      <Route path="/client/dashboard" component={ClientDashboard} />
+      <Route path="/client" component={ClientLogin} />
+      
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

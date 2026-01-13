@@ -4,6 +4,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import * as clientAuth from "./clientAuth";
 
 // ============================================================================
 // SCHEMAS
@@ -284,6 +285,56 @@ export const appRouter = router({
       .input(z.object({ clientId: z.number() }))
       .query(async ({ input }) => {
         return await db.getDocumentsByClientId(input.clientId);
+      }),
+  }),
+
+  // ==========================================================================
+  // CLIENT AUTH (Authentification espace client séparé)
+  // ==========================================================================
+  
+  clientAuth: router({
+    login: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        const result = await clientAuth.authenticateClientUser(input.email, input.password);
+        if (result.success && result.user) {
+          // Générer un token simple (dans un vrai projet, utiliser JWT)
+          const token = `client_${result.user.id}_${Date.now()}`;
+          return { success: true, token, user: result.user };
+        }
+        return { success: false, error: result.error };
+      }),
+    
+    createClientUser: protectedProcedure
+      .input(z.object({
+        clientId: z.number(),
+        email: z.string().email(),
+        password: z.string().min(8),
+      }))
+      .mutation(async ({ input }) => {
+        return await clientAuth.createClientUser(input);
+      }),
+    
+    generateInvitation: protectedProcedure
+      .input(z.object({
+        clientId: z.number(),
+        email: z.string().email(),
+      }))
+      .mutation(async ({ input }) => {
+        const token = await clientAuth.generateInvitationToken(input.clientId, input.email);
+        return { success: true, token, invitationUrl: `/client/invitation/${token}` };
+      }),
+    
+    acceptInvitation: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        password: z.string().min(8),
+      }))
+      .mutation(async ({ input }) => {
+        return await clientAuth.acceptInvitation(input.token, input.password);
       }),
   }),
 });
