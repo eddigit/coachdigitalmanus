@@ -25,8 +25,8 @@
 - [ ] Page Paramètres (company info)
 
 ## Phase 4 : Documents & PDF
-- [ ] Génération PDF devis
-- [ ] Génération PDF factures
+- [x] Génération PDF devis
+- [x] Génération PDF factures
 - [ ] Calculs automatiques (HT, TVA, TTC)
 - [ ] Numérotation automatique
 - [ ] Conversion devis → facture
@@ -49,11 +49,11 @@
 ## Tâches urgentes à compléter
 - [x] Formulaires complets Clients (création + édition)
 - [x] Formulaires complets Projets (création + édition)
-- [ ] Formulaires complets Tâches (création + édition)
-- [ ] Formulaires complets Documents (création devis/factures)
-- [ ] Page Paramètres avec infos entreprise
-- [ ] Génération PDF devis
-- [ ] Génération PDF factures
+- [x] Formulaires complets Tâches (création + édition)
+- [x] Formulaires complets Documents (création devis/factures)
+- [x] Page Paramètres avec infos entreprise
+- [x] Génération PDF devis
+- [x] Génération PDF factures
 - [ ] Numérotation automatique documents
 - [ ] Calculs automatiques (HT, TVA, TTC)
 - [ ] Espace client (portail séparé)
