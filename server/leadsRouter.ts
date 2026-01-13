@@ -4,6 +4,7 @@ import { getDb } from "./db";
 import { leads, leadEmails, emailTemplates, clients, emailCampaigns, emailQueue, emailTracking, emailBlacklist } from "../drizzle/schema";
 import { eq, and, desc, sql, gte } from "drizzle-orm";
 import { sendEmail } from "./emailService";
+import { randomBytes } from "crypto";
 
 /**
  * Router pour la gestion des leads et de la prospection
@@ -303,7 +304,7 @@ export const leadsRouter = router({
       let body = input.body.replace(/\{\{firstName\}\}/g, lead.firstName);
 
       // Créer un tracking ID
-      const trackingId = require('crypto').randomBytes(32).toString('hex');
+      const trackingId = randomBytes(32).toString('hex');
       const unsubscribeToken = Buffer.from(lead.email).toString('base64');
       const baseUrl = process.env.VITE_FRONTEND_FORGE_API_URL || 'http://localhost:3000';
 

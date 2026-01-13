@@ -662,3 +662,8 @@
 - [x] Vérifier si la table clientUsers existe dans la base de données
 - [x] Créer la table clientUsers avec tous les champs
 - [x] Tester l'invitation de clients après correction
+
+## Correction Erreur require() (TERMINÉ)
+- [x] Identifier le fichier serveur utilisant require() au lieu d'import (leadsRouter.ts ligne 306)
+- [x] Corriger le code pour utiliser ES modules (import { randomBytes } from "crypto")
+- [x] Tester la page /leads après correction
