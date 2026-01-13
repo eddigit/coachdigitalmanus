@@ -657,3 +657,8 @@
 - [x] Affichage dans page EmailCampaigns avec cartes
 - [x] Router emailTrackingRouter avec toutes les mutations
 - [x] Routes publiques dans trackingRoutes.ts
+
+## Correction Table clientUsers (TERMINÉ)
+- [x] Vérifier si la table clientUsers existe dans la base de données
+- [x] Créer la table clientUsers avec tous les champs
+- [x] Tester l'invitation de clients après correction
