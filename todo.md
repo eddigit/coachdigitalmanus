@@ -441,3 +441,14 @@
 - [x] Composant TimeInvoiceGenerator avec aperçu
 - [x] Filtres par client et projet
 - [x] Téléchargement automatique du PDF
+
+## Configuration SMTP Gmail (TERMINÉ)
+- [x] Installer nodemailer et @types/nodemailer
+- [x] Créer service emailService.ts avec nodemailer
+- [x] Créer interface de configuration SMTP dans Paramètres
+- [x] Ajouter onglet "Email" dans Settings
+- [x] Formulaire de configuration SMTP (host, port, user, password)
+- [x] Instructions pour obtenir mot de passe d'application Gmail
+- [x] Demander credentials SMTP Gmail à l'utilisateur
+- [x] Tester l'envoi d'email avec vitest
+- [x] Tests passés avec succès

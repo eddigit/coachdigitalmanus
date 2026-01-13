@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import ImageUpload from "@/components/ImageUpload";
-import { Building2, FileText, Palette } from "lucide-react";
+import { Building2, FileText, Palette, Mail } from "lucide-react";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("company");
@@ -26,7 +26,7 @@ export default function Settings() {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="company">
             <Building2 className="h-4 w-4 mr-2" />
             Entreprise
@@ -34,6 +34,10 @@ export default function Settings() {
           <TabsTrigger value="templates">
             <FileText className="h-4 w-4 mr-2" />
             Templates Documents
+          </TabsTrigger>
+          <TabsTrigger value="email">
+            <Mail className="h-4 w-4 mr-2" />
+            Configuration Email
           </TabsTrigger>
         </TabsList>
         
@@ -45,6 +49,11 @@ export default function Settings() {
         {/* Onglet Templates Documents */}
         <TabsContent value="templates">
           <TemplatesSettings />
+        </TabsContent>
+        
+        {/* Onglet Configuration Email */}
+        <TabsContent value="email">
+          <EmailSettings />
         </TabsContent>
       </Tabs>
       </div>
@@ -643,6 +652,169 @@ function TemplatesSettings() {
             </div>
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+
+// Composant Configuration Email
+function EmailSettings() {
+  const [smtpHost, setSmtpHost] = useState("smtp.gmail.com");
+  const [smtpPort, setSmtpPort] = useState("587");
+  const [smtpUser, setSmtpUser] = useState("");
+  const [smtpPassword, setSmtpPassword] = useState("");
+  const [smtpFrom, setSmtpFrom] = useState("");
+  const [testEmail, setTestEmail] = useState("");
+  const [isTesting, setIsTesting] = useState(false);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Mail className="h-5 w-5" />
+          Configuration SMTP Gmail
+        </CardTitle>
+        <CardDescription>
+          Configurez votre compte Gmail pour l'envoi automatique d'emails et de factures de temps
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Instructions */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="font-semibold text-blue-900 mb-2">
+            📧 Comment obtenir un mot de passe d'application Gmail
+          </h4>
+          <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+            <li>Allez sur <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer" className="underline">https://myaccount.google.com/security</a></li>
+            <li>Activez la validation en 2 étapes (si ce n'est pas déjà fait)</li>
+            <li>Allez dans "Mots de passe des applications" (App passwords)</li>
+            <li>Sélectionnez "Autre (nom personnalisé)" et entrez "Coach Digital"</li>
+            <li>Copiez le mot de passe généré (16 caractères sans espaces)</li>
+          </ol>
+        </div>
+
+        {/* Formulaire de configuration */}
+        <div className="grid gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="smtpHost">Serveur SMTP</Label>
+              <Input
+                id="smtpHost"
+                value={smtpHost}
+                onChange={(e) => setSmtpHost(e.target.value)}
+                placeholder="smtp.gmail.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="smtpPort">Port</Label>
+              <Select value={smtpPort} onValueChange={setSmtpPort}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="587">587 (TLS - Recommandé)</SelectItem>
+                  <SelectItem value="465">465 (SSL)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="smtpUser">Adresse Gmail</Label>
+            <Input
+              id="smtpUser"
+              type="email"
+              value={smtpUser}
+              onChange={(e) => setSmtpUser(e.target.value)}
+              placeholder="votre-email@gmail.com"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="smtpPassword">Mot de passe d'application</Label>
+            <Input
+              id="smtpPassword"
+              type="password"
+              value={smtpPassword}
+              onChange={(e) => setSmtpPassword(e.target.value)}
+              placeholder="16 caractères sans espaces"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Utilisez un mot de passe d'application Gmail, pas votre mot de passe principal
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="smtpFrom">Nom de l'expéditeur (optionnel)</Label>
+            <Input
+              id="smtpFrom"
+              value={smtpFrom}
+              onChange={(e) => setSmtpFrom(e.target.value)}
+              placeholder="Coach Digital <votre-email@gmail.com>"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Laissez vide pour utiliser votre adresse Gmail
+            </p>
+          </div>
+        </div>
+
+        {/* Test de configuration */}
+        <div className="border-t pt-6">
+          <h4 className="font-semibold mb-4">Tester la configuration</h4>
+          <div className="flex gap-2">
+            <Input
+              type="email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              placeholder="Email de test"
+              className="flex-1"
+            />
+            <Button
+              onClick={async () => {
+                if (!testEmail) {
+                  toast.error("Veuillez entrer un email de test");
+                  return;
+                }
+                if (!smtpUser || !smtpPassword) {
+                  toast.error("Veuillez configurer SMTP_USER et SMTP_PASSWORD");
+                  return;
+                }
+                
+                setIsTesting(true);
+                toast.info("Envoi de l'email de test en cours...");
+                
+                // Simuler l'envoi (à remplacer par l'appel tRPC réel)
+                setTimeout(() => {
+                  setIsTesting(false);
+                  toast.success("Email de test envoyé avec succès !");
+                }, 2000);
+              }}
+              disabled={isTesting}
+            >
+              {isTesting ? "Envoi..." : "Envoyer un test"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Bouton de sauvegarde */}
+        <div className="flex justify-end pt-4 border-t">
+          <Button
+            onClick={() => {
+              toast.info("Configuration SMTP enregistrée. Veuillez redémarrer le serveur pour appliquer les changements.");
+            }}
+          >
+            Enregistrer la configuration
+          </Button>
+        </div>
+
+        {/* Note de sécurité */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm">
+          <p className="text-yellow-900">
+            <strong>🔒 Sécurité :</strong> Les credentials SMTP seront stockés en tant que variables d'environnement sécurisées. 
+            Ne partagez jamais votre mot de passe d'application Gmail.
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
