@@ -513,7 +513,6 @@ export default function Today() {
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="">Aucun</SelectItem>
                                     {clients.map((client) => (
                                       <SelectItem key={client.id} value={client.id.toString()}>
                                         {client.firstName} {client.lastName}
@@ -537,7 +536,6 @@ export default function Today() {
                                     <SelectValue placeholder="Sélectionner" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="">Aucun</SelectItem>
                                     {projects
                                       .filter((p) => !formData.clientId || p.clientId === formData.clientId)
                                       .map((project) => (
