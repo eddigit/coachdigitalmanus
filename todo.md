@@ -427,3 +427,8 @@
 - [x] Affichage des tâches en retard depuis la table tasks
 - [x] Migration base de données pour nouveau champ priority
 - [x] Tri automatique des entrées par priorité
+
+## Corrections Base de Données
+- [x] Créer table projectCredentials manquante
+- [x] Créer table credentialAccessLogs manquante
+- [x] Corriger erreur page Settings

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE projectCredentials (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  projectId INT NOT NULL,\n  category ENUM('hosting', 'api', 'smtp', 'domain', 'cms', 'database', 'other') NOT NULL,\n  label VARCHAR(255) NOT NULL,\n  description TEXT,\n  encryptedData TEXT NOT NULL,\n  url TEXT,\n  expiresAt TIMESTAMP NULL,\n  notes TEXT,\n  sharedBy INT,\n  sharedAt TIMESTAMP NULL,\n  lastAccessedBy INT,\n  lastAccessedAt TIMESTAMP NULL,\n  accessCount INT DEFAULT 0,\n  isActive BOOLEAN DEFAULT true NOT NULL,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ocAJesqVvSPKcLA.8e21e7f2c662 --database 5evvQHYxZbgpbBkTD2rF9K --execute CREATE TABLE projectCredentials (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  projectId INT NOT NULL,\n  category ENUM('hosting', 'api', 'smtp', 'domain', 'cms', 'database', 'other') NOT NULL,\n  label VARCHAR(255) NOT NULL,\n  description TEXT,\n  encryptedData TEXT NOT NULL,\n  url TEXT,\n  expiresAt TIMESTAMP NULL,\n  notes TEXT,\n  sharedBy INT,\n  sharedAt TIMESTAMP NULL,\n  lastAccessedBy INT,\n  lastAccessedAt TIMESTAMP NULL,\n  accessCount INT DEFAULT 0,\n  isActive BOOLEAN DEFAULT true NOT NULL,\n  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 174
+}

@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE credentialAccessLogs (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  credentialId INT NOT NULL,\n  accessedBy INT NOT NULL,\n  accessType ENUM('view', 'edit', 'delete') NOT NULL,\n  ipAddress VARCHAR(45),\n  userAgent TEXT,\n  accessedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ocAJesqVvSPKcLA.8e21e7f2c662 --database 5evvQHYxZbgpbBkTD2rF9K --execute CREATE TABLE credentialAccessLogs (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  credentialId INT NOT NULL,\n  accessedBy INT NOT NULL,\n  accessType ENUM('view', 'edit', 'delete') NOT NULL,\n  ipAddress VARCHAR(45),\n  userAgent TEXT,\n  accessedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 170
+}
