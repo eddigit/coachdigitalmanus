@@ -82,3 +82,15 @@
 - [ ] Ajouter coffre-fort documents
 - [ ] Ajouter suivi du temps intégré
 - [ ] Ajouter tableau de bord analytique
+
+
+## Refonte Design Ultra-Moderne (demande utilisateur)
+- [x] Changer theme en dark mode
+- [x] Intégrer police Inter (Google Fonts)
+- [x] Palette de couleurs bleu nuit (background, accents)
+- [x] Coins carrés (border-radius minimal)
+- [x] Style Tesla/Apple épuré
+- [ ] Refonte sidebar avec nouveau design
+- [ ] Refonte cards dashboard
+- [ ] Refonte formulaires
+- [ ] Refonte boutons et interactions
