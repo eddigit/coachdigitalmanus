@@ -720,3 +720,12 @@
 - [x] Afficher badge de score dans le Kanban
 - [x] Badge vert (score >= 70), orange (40-70), rouge (< 40)
 - [x] Tooltip explicatif sur le badge
+
+
+## Correction Erreur Déploiement (TERMINÉ)
+- [x] Vérifier configuration du port dans server/_core/index.ts
+- [x] S'assurer que le serveur écoute sur process.env.PORT en production
+- [x] Écouter sur 0.0.0.0 en production (au lieu de localhost)
+- [x] Vérifier les variables d'environnement requises (SMTP optionnel)
+- [x] Ajouter distinction production/développement pour le port
+- [x] Tester le redémarrage du serveur
