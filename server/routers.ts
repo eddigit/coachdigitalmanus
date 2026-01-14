@@ -326,7 +326,15 @@ export const appRouter = router({
   
   documents: router({
     list: protectedProcedure.query(async () => {
-      return await db.getAllDocuments();
+      const docs = await db.getAllDocuments();
+      // Récupérer les lignes pour chaque document
+      const docsWithLines = await Promise.all(
+        docs.map(async (doc) => {
+          const lines = await db.getDocumentLinesByDocumentId(doc.id);
+          return { ...doc, lines };
+        })
+      );
+      return docsWithLines;
     }),
     
     get: protectedProcedure

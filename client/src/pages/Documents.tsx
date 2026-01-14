@@ -86,7 +86,12 @@ export default function Documents() {
         country: client.country || null,
         company: client.company || null,
       },
-      lines: (doc as any).lines || [],
+      lines: ((doc as any).lines || []).map((line: any) => ({
+        description: line.description,
+        quantity: parseFloat(line.quantity) || 0,
+        unitPrice: parseFloat(line.unitPriceHt) || 0,
+        vatRate: parseFloat(line.tvaRate) || 20,
+      })),
       notes: doc.notes || undefined,
       legalMentions: companyData.legalMentions || undefined,
     };
