@@ -276,7 +276,7 @@ export default function Documents() {
 
       {/* Dialog formulaire */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-7xl w-[95vw] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-screen h-screen max-w-none max-h-none overflow-y-auto p-6">
           <DialogHeader>
             <DialogTitle>Nouveau document</DialogTitle>
           </DialogHeader>
