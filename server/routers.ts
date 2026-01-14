@@ -380,9 +380,6 @@ export const appRouter = router({
         paymentMethod: z.enum(["bank_transfer", "check", "card", "cash", "other"]).optional().nullable(),
         isAcompteRequired: z.boolean().default(false),
         acomptePercentage: z.string().optional().nullable(),
-        customConditions: z.string().optional().nullable(),
-        customPaymentTerms: z.string().optional().nullable(),
-        signatureUrl: z.string().optional().nullable(),
         lines: z.array(z.object({
           description: z.string(),
           quantity: z.string(),
