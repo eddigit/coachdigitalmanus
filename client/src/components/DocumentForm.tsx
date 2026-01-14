@@ -46,6 +46,9 @@ export function DocumentForm({ onSuccess, onCancel }: DocumentFormProps) {
   const [notes, setNotes] = useState("");
   const [paymentTerms, setPaymentTerms] = useState("30");
   const [paymentMethod, setPaymentMethod] = useState<"bank_transfer" | "check" | "card" | "cash" | "other">("bank_transfer");
+  const [customConditions, setCustomConditions] = useState("");
+  const [customPaymentTerms, setCustomPaymentTerms] = useState("");
+  const [signatureUrl, setSignatureUrl] = useState("");
 
   const [lines, setLines] = useState<DocumentLine[]>([
     {
@@ -141,6 +144,9 @@ export function DocumentForm({ onSuccess, onCancel }: DocumentFormProps) {
       notes: notes || null,
       paymentTerms: parseInt(paymentTerms),
       paymentMethod,
+      customConditions: customConditions || null,
+      customPaymentTerms: customPaymentTerms || null,
+      signatureUrl: signatureUrl || null,
       isAcompteRequired: false,
       acomptePercentage: null,
       lines,
@@ -160,7 +166,7 @@ export function DocumentForm({ onSuccess, onCancel }: DocumentFormProps) {
           <CardTitle className="text-lg">Informations générales</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div>
               <Label>Type de document *</Label>
               <Select value={type} onValueChange={(v: "quote" | "invoice") => setType(v)}>

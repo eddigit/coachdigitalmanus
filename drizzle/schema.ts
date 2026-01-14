@@ -469,6 +469,12 @@ export const documents = mysqlTable("documents", {
   isAcompteRequired: boolean("isAcompteRequired").default(false),
   acomptePercentage: decimal("acomptePercentage", { precision: 5, scale: 2 }),
   acompteAmount: decimal("acompteAmount", { precision: 10, scale: 2 }),
+  // Conditions personnalisables
+  customConditions: text("customConditions"), // Conditions générales personnalisées
+  customPaymentTerms: text("customPaymentTerms"), // Modalités de paiement personnalisées
+  // Signature
+  signatureUrl: varchar("signatureUrl", { length: 500 }), // URL de la signature numérique
+  signedAt: timestamp("signedAt"), // Date de signature
   // PDF
   pdfUrl: text("pdfUrl"),
   // Stripe
