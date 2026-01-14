@@ -86,7 +86,7 @@ export default function Documents() {
         country: client.country || null,
         company: client.company || null,
       },
-      lines: [], // Les lignes sont stockées séparément
+      lines: (doc as any).lines || [],
       notes: doc.notes || undefined,
       legalMentions: companyData.legalMentions || undefined,
     };
