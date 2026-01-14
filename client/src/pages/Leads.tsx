@@ -31,21 +31,27 @@ import {
 import Papa from "papaparse";
 
 type ViewMode = "list" | "cards" | "kanban";
-type LeadStatus = "suspect" | "analyse" | "negociation" | "conclusion";
+type LeadStatus = "suspect" | "prospect" | "analyse" | "negociation" | "conclusion" | "ordre";
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
   suspect: "Suspect",
+  prospect: "Prospect",
   analyse: "Analyse",
   negociation: "Négociation",
   conclusion: "Conclusion",
+  ordre: "Prise d'Ordre",
 };
 
 const STATUS_COLORS: Record<LeadStatus, string> = {
   suspect: "bg-gray-500",
+  prospect: "bg-purple-500",
   analyse: "bg-blue-500",
   negociation: "bg-yellow-500",
   conclusion: "bg-green-500",
+  ordre: "bg-emerald-600",
 };
+
+const STATUS_ORDER: LeadStatus[] = ["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"];
 
 export default function Leads() {
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
@@ -80,12 +86,14 @@ export default function Leads() {
     return matchesSearch && matchesStatus;
   });
 
-  // Grouper les leads par statut pour le Kanban
+  // Grouper les leads par statut pour le Kanban (SPANCO)
   const leadsByStatus: Record<LeadStatus, any[]> = {
     suspect: filteredLeads.filter((l) => l.status === "suspect"),
+    prospect: filteredLeads.filter((l) => l.status === "prospect"),
     analyse: filteredLeads.filter((l) => l.status === "analyse"),
     negociation: filteredLeads.filter((l) => l.status === "negociation"),
     conclusion: filteredLeads.filter((l) => l.status === "conclusion"),
+    ordre: filteredLeads.filter((l) => l.status === "ordre"),
   };
 
   // Gérer le drag & drop
@@ -258,9 +266,11 @@ export default function Leads() {
             <SelectContent>
               <SelectItem value="all">Tous les statuts</SelectItem>
               <SelectItem value="suspect">Suspect</SelectItem>
+              <SelectItem value="prospect">Prospect</SelectItem>
               <SelectItem value="analyse">Analyse</SelectItem>
               <SelectItem value="negociation">Négociation</SelectItem>
               <SelectItem value="conclusion">Conclusion</SelectItem>
+              <SelectItem value="ordre">Prise d'Ordre</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex gap-2">
@@ -512,11 +522,11 @@ function KanbanView({
   onSendEmail: (lead: any) => void;
   onEdit: (lead: any) => void;
 }) {
-  const statuses: LeadStatus[] = ["suspect", "analyse", "negociation", "conclusion"];
+  const statuses: LeadStatus[] = ["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"];
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-full overflow-x-hidden">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 max-w-full overflow-x-auto pb-4">
         {statuses.map((status) => (
           <div key={status} className="flex flex-col">
             <div className="mb-3">
@@ -726,9 +736,11 @@ function AddLeadForm({ onSuccess }: { onSuccess: () => void }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="suspect">Suspect</SelectItem>
+              <SelectItem value="prospect">Prospect</SelectItem>
               <SelectItem value="analyse">Analyse</SelectItem>
               <SelectItem value="negociation">Négociation</SelectItem>
               <SelectItem value="conclusion">Conclusion</SelectItem>
+              <SelectItem value="ordre">Prise d'Ordre</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -1225,9 +1237,11 @@ function EditLeadForm({ lead, onSuccess }: { lead: any; onSuccess: () => void })
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="suspect">Suspect</SelectItem>
+              <SelectItem value="prospect">Prospect</SelectItem>
               <SelectItem value="analyse">Analyse</SelectItem>
               <SelectItem value="negociation">Négociation</SelectItem>
               <SelectItem value="conclusion">Conclusion</SelectItem>
+              <SelectItem value="ordre">Prise d'Ordre</SelectItem>
             </SelectContent>
           </Select>
         </div>

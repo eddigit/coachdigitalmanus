@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users, Briefcase, CheckSquare, FileText, Calendar, Clock, MessageSquare, Lock, Settings, FileCheck, User, Sun, TrendingUp, StickyNote, Mail, Star } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Briefcase, CheckSquare, FileText, Calendar, Clock, MessageSquare, Lock, Settings, FileCheck, User, Sun, TrendingUp, StickyNote, Mail, Star, FileCode } from "lucide-react";
 import GlobalSearch from "@/components/GlobalSearch";
 import NotificationsBell from "@/components/NotificationsBell";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -34,6 +34,7 @@ const menuItems = [
   { icon: Users, label: "Clients", path: "/clients" },
   { icon: TrendingUp, label: "Prospection", path: "/leads" },
   { icon: Mail, label: "Campagnes Emails", path: "/email-campaigns" },
+  { icon: FileCode, label: "Templates Emails", path: "/email-templates" },
   { icon: Briefcase, label: "Projets", path: "/projects" },
   { icon: CheckSquare, label: "Tâches", path: "/tasks" },
   { icon: FileText, label: "Documents", path: "/documents" },

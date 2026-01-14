@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE emailTemplates \nADD COLUMN bodyJson JSON NULL,\nADD COLUMN previewHtml TEXT NULL,\nADD COLUMN variables JSON NULL,\nADD COLUMN usageCount INT NOT NULL DEFAULT 0,\nMODIFY COLUMN category ENUM('voeux', 'presentation', 'relance', 'rendez_vous', 'suivi', 'remerciement', 'autre') NOT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ocAJesqVvSPKcLA.8e21e7f2c662 --database 5evvQHYxZbgpbBkTD2rF9K --execute ALTER TABLE emailTemplates \nADD COLUMN bodyJson JSON NULL,\nADD COLUMN previewHtml TEXT NULL,\nADD COLUMN variables JSON NULL,\nADD COLUMN usageCount INT NOT NULL DEFAULT 0,\nMODIFY COLUMN category ENUM('voeux', 'presentation', 'relance', 'rendez_vous', 'suivi', 'remerciement', 'autre') NOT NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1524
+}

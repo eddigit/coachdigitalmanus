@@ -41,7 +41,7 @@ export const leadsRouter = router({
   listByStatus: protectedProcedure
     .input(
       z.object({
-        status: z.enum(["suspect", "analyse", "negociation", "conclusion"]),
+        status: z.enum(["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"]),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -85,7 +85,7 @@ export const leadsRouter = router({
         postalCode: z.string().optional(),
         city: z.string().optional(),
         country: z.string().default("France"),
-        status: z.enum(["suspect", "analyse", "negociation", "conclusion"]).default("suspect"),
+        status: z.enum(["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"]).default("suspect"),
         potentialAmount: z.number().optional(),
         probability: z.number().min(0).max(100).default(25),
         source: z.string().optional(),
@@ -138,7 +138,7 @@ export const leadsRouter = router({
         postalCode: z.string().optional(),
         city: z.string().optional(),
         country: z.string().optional(),
-        status: z.enum(["suspect", "analyse", "negociation", "conclusion"]).optional(),
+        status: z.enum(["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"]).optional(),
         potentialAmount: z.number().optional(),
         probability: z.number().min(0).max(100).optional(),
         source: z.string().optional(),
@@ -173,12 +173,12 @@ export const leadsRouter = router({
       return { success: true };
     }),
 
-  // Changer le statut d'un lead
+  // Changer le statut d'un lead (SPANCO)
   updateStatus: protectedProcedure
     .input(
       z.object({
         id: z.number(),
-        status: z.enum(["suspect", "analyse", "negociation", "conclusion"]),
+        status: z.enum(["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -410,7 +410,7 @@ export const leadsRouter = router({
             phone: z.string().optional(),
             company: z.string().optional(),
             position: z.string().optional(),
-            status: z.enum(["suspect", "analyse", "negociation", "conclusion"]).default("suspect"),
+            status: z.enum(["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"]).default("suspect"),
             potentialAmount: z.number().optional(),
             probability: z.number().min(0).max(100).default(25),
             source: z.string().optional(),
@@ -716,6 +716,76 @@ export const emailTemplatesRouter = router({
         .limit(1);
 
       return result[0] || null;
+    }),
+
+  // Créer un nouveau template
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        subject: z.string().min(1),
+        body: z.string(),
+        bodyJson: z.any().optional(),
+        category: z.enum(["voeux", "presentation", "relance", "rendez_vous", "suivi", "remerciement", "autre"]),
+        previewHtml: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const result = await db.insert(emailTemplates).values({
+        name: input.name,
+        subject: input.subject,
+        body: input.body,
+        bodyJson: input.bodyJson,
+        category: input.category,
+        previewHtml: input.previewHtml,
+        isActive: true,
+      });
+
+      return { success: true, id: (result as any).insertId };
+    }),
+
+  // Mettre à jour un template
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().min(1).optional(),
+        subject: z.string().min(1).optional(),
+        body: z.string().optional(),
+        bodyJson: z.any().optional(),
+        category: z.enum(["voeux", "presentation", "relance", "rendez_vous", "suivi", "remerciement", "autre"]).optional(),
+        previewHtml: z.string().optional(),
+        isActive: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      const { id, ...updateData } = input;
+      await db
+        .update(emailTemplates)
+        .set(updateData)
+        .where(eq(emailTemplates.id, id));
+
+      return { success: true };
+    }),
+
+  // Supprimer un template
+  delete: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      await db
+        .delete(emailTemplates)
+        .where(eq(emailTemplates.id, input.id));
+
+      return { success: true };
     }),
   
   // Calculer le score d'engagement d'un lead

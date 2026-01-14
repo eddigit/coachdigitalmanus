@@ -851,3 +851,62 @@
 - [x] Envoi de documents par email (PDF en pièce jointe au client)
 - [x] Vérification complète du projet
 - [x] Push final vers GitHub après corrections
+
+
+## Système de Prospection Optimisé - Janvier 2026 (demande utilisateur)
+
+### Portefeuille Glissant SPANCO
+- [x] Schéma DB: phases SPANCO (Suspect, Prospect, Analyse, Négociation, Conclusion, Ordre)
+- [ ] Vue Kanban drag & drop pour déplacer les leads entre phases
+- [ ] Vue Liste avec filtres avancés
+- [ ] Vue Cartes avec informations clés
+- [ ] Conversion automatique lead → client après devis accepté et facture payée
+
+### Gestion des Templates d'Emails
+- [ ] Éditeur drag & drop pour créer/modifier templates
+- [ ] Templates prédéfinis (vœux, présentation services, relance, suivi)
+- [ ] Variables dynamiques (nom, prénom, entreprise, etc.)
+- [ ] Prévisualisation avant envoi
+- [ ] CRUD complet templates (créer, modifier, supprimer)
+
+### Envoi d'Emails Optimisé
+- [ ] Tracking ouvertures emails (pixel tracking)
+- [ ] Tracking clics sur CTA
+- [ ] Statistiques par campagne et par lead
+- [ ] Système de blacklist (désabonnement)
+- [ ] Envoi via SMTP Gmail avec avatar
+
+### Import Massif
+- [ ] Préparation pour 30 000 contacts
+- [ ] Import CSV/Excel
+- [ ] Détection doublons
+- [ ] Validation emails
+
+
+## Système de Prospection Optimisé - Janvier 2026
+
+### Portefeuille Glissant SPANCO
+- [x] Schéma DB: phases SPANCO (Suspect, Prospect, Analyse, Négociation, Conclusion, Ordre)
+- [x] Vue Kanban drag & drop existante
+- [x] Vue Liste avec filtres
+- [x] Vue Cartes avec informations clés
+
+### Éditeur Templates Emails Drag & Drop
+- [x] Composant EmailTemplateEditor avec drag & drop
+- [x] Blocs disponibles: header, texte, image, bouton CTA, séparateur, espace
+- [x] Variables dynamiques (prénom, nom, entreprise, email, téléphone, poste)
+- [x] Aperçu en temps réel
+- [x] CRUD templates (créer, modifier, dupliquer, supprimer)
+- [x] Page EmailTemplates avec gestion complète
+- [x] Route /email-templates ajoutée
+
+### Envoi Emails Optimisé
+- [x] Tracking ouvertures et clics (schéma emailTracking existant)
+- [x] Système de blacklist (schéma emailBlacklist existant)
+- [x] Envoi de masse avec limite 500/jour
+- [x] Import CSV de leads
+
+### À faire
+- [ ] Mettre à jour la page Leads avec les 6 phases SPANCO
+- [ ] Ajouter lien vers Templates dans la sidebar
+- [ ] Créer templates prédéfinis (vœux, présentation, relance, etc.)

@@ -21,6 +21,7 @@ import Today from "./pages/Today";
 import Leads from "./pages/Leads";
 import Notes from "./pages/Notes";
 import EmailCampaigns from "./pages/EmailCampaigns";
+import EmailTemplates from "./pages/EmailTemplates";
 import Reviews from "./pages/Reviews";
 import ClientLogin from "./pages/client/ClientLogin";
 import ClientDashboard from "./pages/client/ClientDashboard";
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/leads" component={Leads} />
       <Route path="/notes" component={Notes} />
       <Route path="/email-campaigns" component={EmailCampaigns} />
+      <Route path="/email-templates" component={EmailTemplates} />
       <Route path="/reviews" component={Reviews} />
       
       {/* Routes espace client */}

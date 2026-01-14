@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, date } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, date, json } from "drizzle-orm/mysql-core";
 
 /**
  * COACH DIGITAL - Schéma de base de données
@@ -195,8 +195,8 @@ export const leads = mysqlTable("leads", {
   postalCode: varchar("postalCode", { length: 10 }),
   city: varchar("city", { length: 100 }),
   country: varchar("country", { length: 100 }).default("France"),
-  // Pipeline de vente
-  status: mysqlEnum("status", ["suspect", "analyse", "negociation", "conclusion"]).default("suspect").notNull(),
+  // Pipeline de vente SPANCO (Suspect, Prospect, Analyse, Négociation, Conclusion, Ordre)
+  status: mysqlEnum("status", ["suspect", "prospect", "analyse", "negociation", "conclusion", "ordre"]).default("suspect").notNull(),
   potentialAmount: decimal("potentialAmount", { precision: 10, scale: 2 }),
   probability: int("probability").default(25), // % de chance de conversion
   source: varchar("source", { length: 100 }), // LinkedIn, Référence, Site web, etc.
@@ -227,8 +227,16 @@ export const emailTemplates = mysqlTable("emailTemplates", {
   name: varchar("name", { length: 100 }).notNull(),
   subject: varchar("subject", { length: 255 }).notNull(),
   body: text("body").notNull(),
-  category: mysqlEnum("category", ["voeux", "presentation", "relance", "rendez_vous", "autre"]).notNull(),
+  // Structure JSON pour l'éditeur drag & drop (blocs: header, texte, image, bouton, footer)
+  bodyJson: json("bodyJson"),
+  category: mysqlEnum("category", ["voeux", "presentation", "relance", "rendez_vous", "suivi", "remerciement", "autre"]).notNull(),
+  // Aperçu HTML généré depuis bodyJson
+  previewHtml: text("previewHtml"),
+  // Variables disponibles dans ce template
+  variables: json("variables"),
   isActive: boolean("isActive").default(true).notNull(),
+  // Statistiques d'utilisation
+  usageCount: int("usageCount").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
